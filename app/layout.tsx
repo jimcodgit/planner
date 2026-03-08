@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Nav } from '@/components/layout/Nav';
 
 export const metadata: Metadata = {
-  title: 'GCSE Revision Planner',
+  title: "George's GCSE Planner",
   description: 'Plan and track GCSE revision',
 };
 

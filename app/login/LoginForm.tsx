@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/Input';
@@ -11,6 +11,8 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const linkError = searchParams.get('error');
   const [error, setError] = useState('');
   const router = useRouter();
   const supabase = createClient();
@@ -54,6 +56,11 @@ export function LoginForm() {
         required
         autoComplete="current-password"
       />
+      {linkError && (
+        <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          Your reset link has expired or is invalid. Please request a new one.
+        </p>
+      )}
       {error && (
         <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
       )}

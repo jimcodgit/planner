@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { ResetPasswordForm } from './ResetPasswordForm';
 
 export default function ResetPasswordPage() {
@@ -9,7 +10,9 @@ export default function ResetPasswordPage() {
           <h1 className="text-2xl font-bold text-gray-900">Set new password</h1>
           <p className="text-gray-500 mt-1">Choose a strong password for your account</p>
         </div>
-        <ResetPasswordForm />
+        <Suspense>
+          <ResetPasswordForm />
+        </Suspense>
       </div>
     </div>
   );

@@ -20,12 +20,14 @@ export function Nav({ role, displayName }: NavProps) {
   const studentLinks = [
     { href: '/', label: 'Dashboard' },
     { href: '/weekly', label: 'Weekly' },
+    { href: '/monthly', label: 'Monthly' },
     { href: '/daily', label: 'Daily' },
     { href: '/subjects', label: 'Subjects' },
   ];
 
   const parentLinks = [
     { href: '/parent', label: 'Overview' },
+    { href: '/monthly', label: 'Monthly' },
     { href: '/subjects', label: 'Subjects' },
   ];
 

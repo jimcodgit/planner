@@ -108,7 +108,7 @@ export function MonthGrid({
   return (
     <div className="space-y-4">
       {/* Month heading */}
-      <h1 className="text-2xl font-bold text-gray-900">
+      <h1 className="text-2xl font-bold text-indigo-600">
         {format(currentDate, 'MMMM yyyy')}
       </h1>
 

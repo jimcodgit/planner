@@ -107,18 +107,18 @@ export function MonthGrid({
 
   return (
     <div className="space-y-4">
+      {/* Month heading */}
+      <h1 className="text-2xl font-bold text-gray-900">
+        {format(currentDate, 'MMMM yyyy')}
+      </h1>
+
       {/* Month navigation */}
       <div className="flex items-center justify-between">
         <Button variant="secondary" size="sm" onClick={() => setCurrentDate((d) => subMonths(d, 1))}>
           ← Prev
         </Button>
-        <div className="text-center">
-          <div className="text-lg font-bold text-gray-900">
-            {format(currentDate, 'MMMM yyyy')}
-          </div>
-          <div className="text-xs text-gray-500">
-            {minutesToHours(doneMins)} done · {minutesToHours(plannedMins)} planned
-          </div>
+        <div className="text-sm text-gray-500">
+          {minutesToHours(doneMins)} done · {minutesToHours(plannedMins)} planned
         </div>
         <Button variant="secondary" size="sm" onClick={() => setCurrentDate((d) => addMonths(d, 1))}>
           Next →

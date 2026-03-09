@@ -65,7 +65,7 @@ export default async function MonthlyPage() {
   );
 
   return (
-    <PageWrapper title="Monthly View">
+    <PageWrapper>
       <MonthGrid
         initialSessions={sessions}
         subjects={subjects ?? []}

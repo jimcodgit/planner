@@ -1,44 +1,53 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 
+type State = 'loading' | 'ready' | 'error';
+
 export function ResetPasswordForm() {
+  const [state, setState] = useState<State>('loading');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sessionReady, setSessionReady] = useState(false);
-  const [initError, setInitError] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
+  const ready = useRef(false);
 
   useEffect(() => {
-    const code = searchParams.get('code');
+    // Listen for PASSWORD_RECOVERY — fires automatically when Supabase
+    // detects the recovery token in the URL (works for both implicit
+    // hash-based tokens and PKCE code exchange on same device)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        ready.current = true;
+        setState('ready');
+      }
+    });
 
-    if (code) {
-      // PKCE flow — exchange the code for a live session
-      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
-        if (error) {
-          setInitError('This reset link has expired or already been used. Please request a new one.');
-        } else {
-          setSessionReady(true);
-        }
-      });
-    } else {
-      // Implicit / token-hash flow — session already set, check it exists
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-          setSessionReady(true);
-        } else {
-          setInitError('No valid session found. Please request a new reset link.');
-        }
-      });
-    }
+    // Also check for an existing recovery session (e.g. page refresh)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session && !ready.current) {
+        ready.current = true;
+        setState('ready');
+      }
+    });
+
+    // After 6 seconds with no recovery event, show an error
+    const timeout = setTimeout(() => {
+      if (!ready.current) {
+        setState('error');
+      }
+    }, 6000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,14 +58,12 @@ export function ResetPasswordForm() {
       setError('Passwords do not match');
       return;
     }
-
     if (password.length < 8) {
       setError('Password must be at least 8 characters');
       return;
     }
 
     setLoading(true);
-
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
@@ -69,20 +76,24 @@ export function ResetPasswordForm() {
     router.refresh();
   }
 
-  if (initError) {
+  if (state === 'loading') {
     return (
-      <div className="space-y-4 text-center">
-        <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{initError}</p>
-        <a href="/forgot-password" className="text-sm text-indigo-600 hover:underline block">
-          Request a new reset link
-        </a>
+      <div className="text-center py-6 text-sm text-gray-500">
+        Verifying reset link…
       </div>
     );
   }
 
-  if (!sessionReady) {
+  if (state === 'error') {
     return (
-      <div className="text-center text-sm text-gray-500 py-4">Verifying reset link…</div>
+      <div className="space-y-4 text-center">
+        <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          This reset link has expired or already been used.
+        </p>
+        <a href="/forgot-password" className="text-sm text-indigo-600 hover:underline block">
+          Request a new reset link
+        </a>
+      </div>
     );
   }
 

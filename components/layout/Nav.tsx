@@ -23,12 +23,14 @@ export function Nav({ role, displayName }: NavProps) {
     { href: '/monthly', label: 'Monthly' },
     { href: '/daily', label: 'Daily' },
     { href: '/subjects', label: 'Subjects' },
+    { href: '/exams', label: 'Exams' },
   ];
 
   const parentLinks = [
     { href: '/parent', label: 'Overview' },
     { href: '/monthly', label: 'Monthly' },
     { href: '/subjects', label: 'Subjects' },
+    { href: '/exams', label: 'Exams' },
   ];
 
   const links = role === 'parent' ? parentLinks : studentLinks;

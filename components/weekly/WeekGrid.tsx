@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { DayColumn } from './DayColumn';
 import type { RevisionSession, Subject, Topic } from '@/types/database';
 import { getWeekDays, toISODate, format, addWeeks, subWeeks } from '@/lib/utils/dates';
+import { CopyWeekButton } from './CopyWeekButton';
 import { minutesToHours } from '@/lib/utils/time';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 
@@ -76,6 +77,16 @@ export function WeekGrid({
           Next →
         </Button>
       </div>
+
+      {/* Copy previous week */}
+      {!isParent && (
+        <div className="flex justify-end">
+          <CopyWeekButton
+            targetWeekStart={toISODate(weekDays[0])}
+            previousWeekStart={toISODate(getWeekDays(subWeeks(currentWeekDate, 1))[0])}
+          />
+        </div>
+      )}
 
       {/* Progress summary */}
       <div className="bg-white rounded-xl border border-gray-200 p-4">

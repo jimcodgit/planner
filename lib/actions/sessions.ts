@@ -135,3 +135,84 @@ export async function setWeeklyTarget(subjectId: string | null, hours: number) {
   revalidatePath('/parent');
   revalidatePath('/');
 }
+
+export async function copyPreviousWeek(targetWeekStart: string): Promise<number> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  // Source week = 7 days before target week start
+  const targetDate = new Date(targetWeekStart);
+  const sourceDate = new Date(targetDate);
+  sourceDate.setDate(sourceDate.getDate() - 7);
+
+  const sourceStart = sourceDate.toISOString().slice(0, 10);
+  const sourceEnd = new Date(sourceDate.getTime() + 6 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const targetEnd = new Date(targetDate.getTime() + 6 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+
+  // Fetch source week sessions (exclude Skipped)
+  const { data: sourceSessions, error: fetchError } = await supabase
+    .from('revision_sessions')
+    .select('*')
+    .eq('user_id', user.id)
+    .gte('date', sourceStart)
+    .lte('date', sourceEnd)
+    .neq('status', 'Skipped');
+
+  if (fetchError) throw new Error(fetchError.message);
+  if (!sourceSessions || sourceSessions.length === 0) return 0;
+
+  // Fetch existing sessions in target week to avoid duplicates
+  const { data: existingSessions } = await supabase
+    .from('revision_sessions')
+    .select('date, start_time, subject_id')
+    .eq('user_id', user.id)
+    .gte('date', targetWeekStart)
+    .lte('date', targetEnd);
+
+  const existingKeys = new Set(
+    (existingSessions ?? []).map((s) => `${s.date}-${s.subject_id}-${s.start_time}`)
+  );
+
+  // Map each source session to the same day of the following week
+  const newSessions = sourceSessions
+    .map((s) => {
+      const sourceSessionDate = new Date(s.date);
+      const newDate = new Date(sourceSessionDate.getTime() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10);
+
+      const key = `${newDate}-${s.subject_id}-${s.start_time}`;
+      if (existingKeys.has(key)) return null;
+
+      return {
+        user_id: user.id,
+        subject_id: s.subject_id,
+        topic_id: s.topic_id,
+        date: newDate,
+        start_time: s.start_time,
+        duration_minutes: s.duration_minutes,
+        type: s.type,
+        status: 'Planned' as SessionStatus,
+        skipped_count: 0,
+        notes: s.notes,
+      };
+    })
+    .filter(Boolean);
+
+  if (newSessions.length === 0) return 0;
+
+  const { error: insertError } = await supabase
+    .from('revision_sessions')
+    .insert(newSessions);
+
+  if (insertError) throw new Error(insertError.message);
+
+  revalidatePath('/weekly');
+  revalidatePath('/');
+  return newSessions.length;
+}

@@ -55,6 +55,10 @@ CREATE POLICY "subjects_update_own" ON subjects
 CREATE POLICY "subjects_delete_own" ON subjects
   FOR DELETE USING (user_id = auth.uid() AND NOT is_parent());
 
+-- Parents can update subjects (e.g. exam dates)
+CREATE POLICY "subjects_update_parent" ON subjects
+  FOR UPDATE USING (is_parent());
+
 -- TOPICS (owned via subject)
 CREATE POLICY "topics_select_own" ON topics
   FOR SELECT USING (

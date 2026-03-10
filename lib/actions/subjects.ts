@@ -42,11 +42,13 @@ export async function updateSubject(id: string, data: Partial<SubjectFormData>) 
 
 export async function updateExamDates(subjectId: string, examDates: ExamDate[]) {
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('subjects')
     .update({ exam_dates: examDates })
-    .eq('id', subjectId);
+    .eq('id', subjectId)
+    .select('id');
   if (error) throw new Error(error.message);
+  if (!data || data.length === 0) throw new Error('Update failed — permission denied');
   revalidatePath('/subjects');
   revalidatePath(`/subjects/${subjectId}`);
   revalidatePath('/');

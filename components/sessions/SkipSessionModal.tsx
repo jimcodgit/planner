@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -21,6 +22,7 @@ export function SkipSessionModal({ open, onClose, sessionId, sessionDate }: Skip
   const [rescheduleTime, setRescheduleTime] = useState('');
   const [mode, setMode] = useState<'skip' | 'reschedule'>('reschedule');
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleConfirm() {
     setLoading(true);
@@ -31,6 +33,7 @@ export function SkipSessionModal({ open, onClose, sessionId, sessionDate }: Skip
         await updateSessionStatus(sessionId, 'Skipped');
         await rescheduleSession(sessionId, rescheduleDate, rescheduleTime || null);
       }
+      router.refresh();
       onClose();
     } finally {
       setLoading(false);

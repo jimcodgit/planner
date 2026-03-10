@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
 import { MarkDoneButton } from '@/components/sessions/MarkDoneButton';
 import { SkipSessionModal } from '@/components/sessions/SkipSessionModal';
@@ -27,10 +28,12 @@ const STATUS_STYLE: Record<string, string> = {
 
 export function SessionCard({ session, subject, topic, onEdit, isParent }: SessionCardProps) {
   const [skipOpen, setSkipOpen] = useState(false);
+  const router = useRouter();
 
   async function handleDelete() {
     if (!confirm('Delete this session?')) return;
     await deleteSession(session.id);
+    router.refresh();
   }
 
   return (

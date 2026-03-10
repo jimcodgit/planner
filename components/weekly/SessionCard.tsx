@@ -73,20 +73,20 @@ export function SessionCard({ session, subject, topic, onEdit, isParent }: Sessi
           <div className="text-amber-600 mt-0.5">Skipped {session.skipped_count}×</div>
         )}
 
-        {!isParent && session.status === 'Planned' && (
+        {!isParent && (
           <div className="flex gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <MarkDoneButton sessionId={session.id} topicId={session.topic_id} />
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => setSkipOpen(true)}
-            >
-              Skip
-            </Button>
+            {session.status === 'Planned' && (
+              <>
+                <MarkDoneButton sessionId={session.id} topicId={session.topic_id} />
+                <Button size="sm" variant="secondary" onClick={() => setSkipOpen(true)}>
+                  Skip
+                </Button>
+              </>
+            )}
             {onEdit && (
               <Button size="sm" variant="ghost" onClick={onEdit}>✎</Button>
             )}
-            <Button size="sm" variant="ghost" onClick={handleDelete}>✕</Button>
+            <Button size="sm" variant="danger" onClick={handleDelete}>Delete</Button>
           </div>
         )}
       </div>

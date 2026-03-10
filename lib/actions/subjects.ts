@@ -40,19 +40,20 @@ export async function updateSubject(id: string, data: Partial<SubjectFormData>) 
   revalidatePath('/');
 }
 
-export async function updateExamDates(subjectId: string, examDates: ExamDate[]) {
+export async function updateExamDates(subjectId: string, examDates: ExamDate[]): Promise<{ error?: string }> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('subjects')
     .update({ exam_dates: examDates })
     .eq('id', subjectId)
     .select('id');
-  if (error) throw new Error(error.message);
-  if (!data || data.length === 0) throw new Error('Update failed — permission denied');
+  if (error) return { error: error.message };
+  if (!data || data.length === 0) return { error: 'Save failed — you may not have permission to edit this subject' };
   revalidatePath('/subjects');
   revalidatePath(`/subjects/${subjectId}`);
   revalidatePath('/');
   revalidatePath('/parent');
+  return {};
 }
 
 export async function deleteSubject(id: string) {

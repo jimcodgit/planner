@@ -50,7 +50,11 @@ export function ExamDatesForm({
           ...(d.time ? { time: d.time } : {}),
           ...(d.duration_minutes ? { duration_minutes: d.duration_minutes } : {}),
         }));
-      await updateExamDates(subjectId, cleaned);
+      const result = await updateExamDates(subjectId, cleaned);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');

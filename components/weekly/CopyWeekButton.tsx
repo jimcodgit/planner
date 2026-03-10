@@ -40,23 +40,30 @@ export function CopyWeekButton({ targetWeekStart, previousWeekStart }: CopyWeekB
   const fmt = (d: Date) =>
     d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
+  const targetWeekDate = new Date(targetWeekStart);
+  const targetWeekEnd = new Date(targetWeekDate.getTime() + 6 * 24 * 60 * 60 * 1000);
+
   return (
     <>
       <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>
-        Copy previous week
+        Copy from {fmt(prevWeekDate)} – {fmt(prevWeekEnd)}
       </Button>
 
-      <Modal open={open} onClose={handleClose} title="Copy previous week">
+      <Modal open={open} onClose={handleClose} title="Copy sessions from previous week">
         {result === null ? (
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              This will copy all planned sessions from{' '}
-              <strong>{fmt(prevWeekDate)} – {fmt(prevWeekEnd)}</strong> into the current week,
+              Copy all sessions from{' '}
+              <strong>{fmt(prevWeekDate)} – {fmt(prevWeekEnd)}</strong> into{' '}
+              <strong>{fmt(targetWeekDate)} – {fmt(targetWeekEnd)}</strong>,
               keeping the same subjects, topics, times and durations.
             </p>
             <p className="text-sm text-gray-500">
-              Sessions that already exist in the current week will not be duplicated.
+              Sessions that already exist in the target week will not be duplicated.
               Skipped sessions will not be copied.
+            </p>
+            <p className="text-xs text-indigo-600 bg-indigo-50 rounded-lg px-3 py-2">
+              Tip: to copy this week into next week, use the Next → button first, then copy.
             </p>
             <div className="flex gap-2 pt-2">
               <Button variant="secondary" onClick={handleClose} className="flex-1">
@@ -74,7 +81,11 @@ export function CopyWeekButton({ targetWeekStart, previousWeekStart }: CopyWeekB
                 <div className="text-4xl">📭</div>
                 <p className="text-gray-700 font-medium">Nothing to copy</p>
                 <p className="text-sm text-gray-500">
-                  No sessions were found in the previous week, or they all already exist this week.
+                  No sessions found in <strong>{fmt(prevWeekDate)} – {fmt(prevWeekEnd)}</strong>,
+                  or they all already exist in the target week.
+                </p>
+                <p className="text-xs text-indigo-600 bg-indigo-50 rounded-lg px-3 py-2">
+                  To copy this week into next week, close this, click Next →, then copy.
                 </p>
               </>
             ) : (
@@ -84,7 +95,7 @@ export function CopyWeekButton({ targetWeekStart, previousWeekStart }: CopyWeekB
                   {result} session{result !== 1 ? 's' : ''} copied
                 </p>
                 <p className="text-sm text-gray-500">
-                  Sessions have been added to this week as Planned.
+                  Sessions added to <strong>{fmt(targetWeekDate)} – {fmt(targetWeekEnd)}</strong> as Planned.
                 </p>
               </>
             )}

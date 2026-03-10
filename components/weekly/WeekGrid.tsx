@@ -29,7 +29,6 @@ export function WeekGrid({
   isParent,
 }: WeekGridProps) {
   const [weekOffset, setWeekOffset] = useState(0);
-  const [sessions] = useState(initialSessions);
 
   const baseDate = new Date();
   const currentWeekDate =
@@ -40,12 +39,19 @@ export function WeekGrid({
       : subWeeks(baseDate, Math.abs(weekOffset));
 
   const weekDays = getWeekDays(currentWeekDate);
+  const weekStart = toISODate(weekDays[0]);
+  const weekEnd = toISODate(weekDays[6]);
 
-  const doneMins = sessions
+  // Use prop directly (not frozen state) so router.refresh() updates the view
+  const viewedWeekSessions = initialSessions.filter(
+    (s) => s.date >= weekStart && s.date <= weekEnd
+  );
+
+  const doneMins = viewedWeekSessions
     .filter((s) => s.status === 'Done')
     .reduce((sum, s) => sum + s.duration_minutes, 0);
 
-  const plannedMins = sessions
+  const plannedMins = viewedWeekSessions
     .filter((s) => s.status === 'Planned' || s.status === 'Done')
     .reduce((sum, s) => sum + s.duration_minutes, 0);
 
@@ -108,7 +114,7 @@ export function WeekGrid({
       <div className="grid grid-cols-7 gap-1.5">
         {weekDays.map((day) => {
           const dateStr = toISODate(day);
-          const daySessions = sessions.filter((s) => s.date === dateStr);
+          const daySessions = viewedWeekSessions.filter((s) => s.date === dateStr);
           return (
             <DayColumn
               key={dateStr}

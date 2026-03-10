@@ -19,6 +19,11 @@ export default async function WeeklyPage() {
 
   const today = new Date();
   const weekDays = getWeekDays(today);
+
+  // Fetch a wider window so week navigation and copying to future weeks works
+  const windowStart = toISODate(new Date(weekDays[0].getTime() - 21 * 24 * 60 * 60 * 1000));
+  const windowEnd = toISODate(new Date(weekDays[6].getTime() + 21 * 24 * 60 * 60 * 1000));
+
   const weekStart = toISODate(weekDays[0]);
   const weekEnd = toISODate(weekDays[6]);
 
@@ -35,8 +40,8 @@ export default async function WeeklyPage() {
       .from('revision_sessions')
       .select('*')
       .in('subject_id', subjectIds)
-      .gte('date', weekStart)
-      .lte('date', weekEnd)
+      .gte('date', windowStart)
+      .lte('date', windowEnd)
       .order('start_time'),
     supabase
       .from('weekly_targets')
@@ -68,7 +73,8 @@ export default async function WeeklyPage() {
   const topicDifficultyMap: Record<string, number> = {};
   for (const t of topics) topicDifficultyMap[t.id] = t.difficulty;
 
-  const consecutiveWarnings = getWeeklyConsecutiveWarnings(sessions, topicDifficultyMap);
+  const thisWeekSessions = sessions.filter((s) => s.date >= weekStart && s.date <= weekEnd);
+  const consecutiveWarnings = getWeeklyConsecutiveWarnings(thisWeekSessions, topicDifficultyMap);
 
   return (
     <PageWrapper title="Weekly Planner">

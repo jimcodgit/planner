@@ -40,6 +40,19 @@ export async function updateSubject(id: string, data: Partial<SubjectFormData>) 
   revalidatePath('/');
 }
 
+export async function updateExamDates(subjectId: string, examDates: ExamDate[]) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('subjects')
+    .update({ exam_dates: examDates })
+    .eq('id', subjectId);
+  if (error) throw new Error(error.message);
+  revalidatePath('/subjects');
+  revalidatePath(`/subjects/${subjectId}`);
+  revalidatePath('/');
+  revalidatePath('/parent');
+}
+
 export async function deleteSubject(id: string) {
   const supabase = await createClient();
   const { error } = await supabase.from('subjects').delete().eq('id', id);

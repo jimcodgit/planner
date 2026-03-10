@@ -9,10 +9,12 @@ import { Modal } from '@/components/ui/Modal';
 import { TopicRow } from '@/components/subjects/TopicRow';
 import { TopicForm } from '@/components/subjects/TopicForm';
 import { SubjectForm } from '@/components/subjects/SubjectForm';
+import { ExamDatesForm } from '@/components/subjects/ExamDatesForm';
 import { deleteSubject } from '@/lib/actions/subjects';
 import type { Subject, Topic } from '@/types/database';
 import { daysUntil, formatDisplayDate } from '@/lib/utils/dates';
 import { useRouter } from 'next/navigation';
+import { minutesToHours } from '@/lib/utils/time';
 
 interface SubjectDetailClientProps {
   subject: Subject;
@@ -24,6 +26,7 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
   const [showAddTopic, setShowAddTopic] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
   const [showEditSubject, setShowEditSubject] = useState(false);
+  const [showEditExamDates, setShowEditExamDates] = useState(false);
   const router = useRouter();
 
   const confidentCount = topics.filter((t) => t.status === 'Confident').length;
@@ -66,20 +69,45 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
       </div>
 
       {/* Exam dates */}
-      {subject.exam_dates.length > 0 && (
-        <div className="flex gap-3 flex-wrap">
-          {subject.exam_dates.map((ed, i) => {
-            const days = daysUntil(ed.date);
-            const variant = days < 0 ? 'gray' : days < 7 ? 'red' : days < 30 ? 'yellow' : 'green';
-            return (
-              <Badge key={i} variant={variant}>
-                {ed.label}: {formatDisplayDate(ed.date)}
-                {days >= 0 && ` (${days}d)`}
-              </Badge>
-            );
-          })}
-        </div>
-      )}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">Exam dates</h2>
+            <Button variant="secondary" size="sm" onClick={() => setShowEditExamDates(true)}>
+              {subject.exam_dates.length > 0 ? 'Edit' : '+ Add dates'}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="py-3">
+          {subject.exam_dates.length === 0 ? (
+            <p className="text-sm text-gray-400">No exam dates added yet</p>
+          ) : (
+            <div className="space-y-2">
+              {subject.exam_dates.map((ed, i) => {
+                const days = daysUntil(ed.date);
+                const variant = days < 0 ? 'gray' : days < 7 ? 'red' : days < 30 ? 'yellow' : 'green';
+                return (
+                  <div key={i} className="flex items-center justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-900">{ed.label}</span>
+                        <Badge variant={variant}>
+                          {days < 0 ? 'Past' : days === 0 ? 'Today' : `${days}d`}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5 flex gap-3">
+                        <span>{formatDisplayDate(ed.date)}</span>
+                        {ed.time && <span>🕐 {ed.time}</span>}
+                        {ed.duration_minutes && <span>⏱ {minutesToHours(ed.duration_minutes)}</span>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Never revised warning */}
       {neverRevised.length > 0 && (
@@ -134,11 +162,7 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
         <TopicForm subjectId={subject.id} onSuccess={() => setShowAddTopic(false)} />
       </Modal>
 
-      <Modal
-        open={!!editingTopic}
-        onClose={() => setEditingTopic(null)}
-        title="Edit topic"
-      >
+      <Modal open={!!editingTopic} onClose={() => setEditingTopic(null)} title="Edit topic">
         {editingTopic && (
           <TopicForm
             subjectId={subject.id}
@@ -148,12 +172,21 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
         )}
       </Modal>
 
-      <Modal
-        open={showEditSubject}
-        onClose={() => setShowEditSubject(false)}
-        title="Edit subject"
-      >
+      <Modal open={showEditSubject} onClose={() => setShowEditSubject(false)} title="Edit subject">
         <SubjectForm subject={subject} onSuccess={() => setShowEditSubject(false)} />
+      </Modal>
+
+      <Modal
+        open={showEditExamDates}
+        onClose={() => setShowEditExamDates(false)}
+        title={`Exam dates — ${subject.name}`}
+      >
+        <ExamDatesForm
+          subjectId={subject.id}
+          subjectName={subject.name}
+          initialDates={subject.exam_dates}
+          onSuccess={() => setShowEditExamDates(false)}
+        />
       </Modal>
     </div>
   );

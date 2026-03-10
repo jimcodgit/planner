@@ -6,7 +6,9 @@ export type UserRole = 'student' | 'parent';
 
 export interface ExamDate {
   label: string;
-  date: string; // ISO date string YYYY-MM-DD
+  date: string;        // YYYY-MM-DD
+  time?: string;       // HH:MM
+  duration_minutes?: number;
 }
 
 export interface Profile {

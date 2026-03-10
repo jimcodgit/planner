@@ -3,14 +3,16 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { updateSessionStatus } from '@/lib/actions/sessions';
+import { cn } from '@/lib/utils/cn';
 
 interface MarkDoneButtonProps {
   sessionId: string;
   topicId: string | null;
   disabled?: boolean;
+  className?: string;
 }
 
-export function MarkDoneButton({ sessionId, topicId, disabled }: MarkDoneButtonProps) {
+export function MarkDoneButton({ sessionId, topicId, disabled, className }: MarkDoneButtonProps) {
   const [loading, setLoading] = useState(false);
 
   async function handleClick() {
@@ -27,7 +29,7 @@ export function MarkDoneButton({ sessionId, topicId, disabled }: MarkDoneButtonP
       size="sm"
       onClick={handleClick}
       disabled={loading || disabled}
-      className="bg-green-600 hover:bg-green-700 text-white"
+      className={cn('bg-green-600 hover:bg-green-700 text-white', className)}
     >
       {loading ? '…' : '✓ Done'}
     </Button>

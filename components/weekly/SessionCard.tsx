@@ -74,19 +74,19 @@ export function SessionCard({ session, subject, topic, onEdit, isParent }: Sessi
         )}
 
         {!isParent && (
-          <div className="flex gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex flex-wrap gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
             {session.status === 'Planned' && (
               <>
-                <MarkDoneButton sessionId={session.id} topicId={session.topic_id} />
-                <Button size="sm" variant="secondary" onClick={() => setSkipOpen(true)}>
+                <MarkDoneButton sessionId={session.id} topicId={session.topic_id} className="px-1.5 py-0.5 text-xs" />
+                <Button size="sm" variant="secondary" onClick={() => setSkipOpen(true)} className="px-1.5 py-0.5 text-xs">
                   Skip
                 </Button>
               </>
             )}
             {onEdit && (
-              <Button size="sm" variant="ghost" onClick={onEdit}>✎</Button>
+              <Button size="sm" variant="ghost" onClick={onEdit} className="px-1.5 py-0.5 text-xs">✎</Button>
             )}
-            <Button size="sm" variant="danger" onClick={handleDelete}>Delete</Button>
+            <Button size="sm" variant="danger" onClick={handleDelete} className="px-1.5 py-0.5 text-xs">Del</Button>
           </div>
         )}
       </div>

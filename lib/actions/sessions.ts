@@ -14,10 +14,10 @@ export interface SessionFormData {
   notes: string;
 }
 
-export async function createSession(data: SessionFormData) {
+export async function createSession(data: SessionFormData): Promise<{ error?: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  if (!user) return { error: 'Not authenticated' };
 
   const { error } = await supabase.from('revision_sessions').insert({
     user_id: user.id,
@@ -30,10 +30,11 @@ export async function createSession(data: SessionFormData) {
     notes: data.notes || null,
     status: 'Planned',
   });
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
   revalidatePath('/weekly');
   revalidatePath('/daily');
   revalidatePath('/');
+  return {};
 }
 
 export async function updateSessionStatus(
@@ -81,13 +82,14 @@ export async function rescheduleSession(id: string, newDate: string, newStartTim
   revalidatePath('/daily');
 }
 
-export async function updateSession(id: string, data: Partial<SessionFormData>) {
+export async function updateSession(id: string, data: Partial<SessionFormData>): Promise<{ error?: string }> {
   const supabase = await createClient();
   const { error } = await supabase.from('revision_sessions').update(data).eq('id', id);
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
   revalidatePath('/weekly');
   revalidatePath('/daily');
   revalidatePath('/');
+  return {};
 }
 
 export async function deleteSession(id: string) {

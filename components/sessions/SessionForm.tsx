@@ -59,10 +59,12 @@ export function SessionForm({
         type,
         notes,
       };
-      if (session) {
-        await updateSession(session.id, data);
-      } else {
-        await createSession(data);
+      const result = session
+        ? await updateSession(session.id, data)
+        : await createSession(data);
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
       onSuccess?.();
     } catch (err) {

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
-import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Badge } from '@/components/ui/Badge';
 import type { Subject, Topic } from '@/types/database';
 import { minutesToHours } from '@/lib/utils/time';
@@ -30,7 +29,9 @@ export function SubjectCard({
   plannedByType,
 }: SubjectCardProps) {
   const confidentCount = topics.filter((t) => t.status === 'Confident').length;
+  const inProgressCount = topics.filter((t) => t.status === 'Learning' || t.status === 'Revising').length;
   const pctConfident = topics.length > 0 ? Math.round((confidentCount / topics.length) * 100) : 0;
+  const pctInProgress = topics.length > 0 ? Math.round((inProgressCount / topics.length) * 100) : 0;
 
   const nextExam = subject.exam_dates
     .map((ed) => ({ ...ed, days: daysUntil(ed.date) }))
@@ -71,20 +72,28 @@ export function SubjectCard({
           {/* Top stats */}
           <div className="grid grid-cols-3 gap-3 text-center mb-3">
             <div>
-              <div className="text-lg font-bold text-gray-900">{pctConfident}%</div>
-              <div className="text-xs text-gray-500">Confident</div>
+              <div className="text-lg font-bold text-green-600">{pctConfident}%</div>
+              <div className="text-xs text-gray-500">Done</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold text-amber-500">{pctInProgress}%</div>
+              <div className="text-xs text-gray-500">In Progress</div>
             </div>
             <div>
               <div className="text-lg font-bold text-gray-900">{minutesToHours(weekDoneMinutes)}</div>
               <div className="text-xs text-gray-500">This week</div>
             </div>
-            <div>
-              <div className="text-lg font-bold text-gray-900">{topics.length}</div>
-              <div className="text-xs text-gray-500">Topics</div>
-            </div>
           </div>
 
-          <ProgressBar value={pctConfident} />
+          {/* Stacked topic progress bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2 flex overflow-hidden mb-1">
+            <div className="h-2 bg-green-500 transition-all duration-300" style={{ width: `${pctConfident}%` }} />
+            <div className="h-2 bg-amber-400 transition-all duration-300" style={{ width: `${pctInProgress}%` }} />
+          </div>
+          <div className="flex justify-between text-xs text-gray-400 mb-1">
+            <span>{confidentCount + inProgressCount}/{topics.length} started</span>
+            <span>{confidentCount} done</span>
+          </div>
 
           {/* Session type breakdown */}
           <div className="mt-3 pt-3 border-t border-gray-100">

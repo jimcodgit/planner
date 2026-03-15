@@ -30,6 +30,10 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
   const router = useRouter();
 
   const confidentCount = topics.filter((t) => t.status === 'Confident').length;
+  const inProgressCount = topics.filter((t) => t.status === 'Learning' || t.status === 'Revising').length;
+  const notStartedCount = topics.filter((t) => t.status === 'Not Started').length;
+  const pctDone = topics.length > 0 ? Math.round((confidentCount / topics.length) * 100) : 0;
+  const pctInProgress = topics.length > 0 ? Math.round((inProgressCount / topics.length) * 100) : 0;
   const neverRevised = topics.filter((t) => !t.last_revised_at);
 
   async function handleDeleteSubject() {
@@ -51,10 +55,30 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
             <h1 className="text-2xl font-bold text-gray-900">{subject.name}</h1>
             {subject.exam_board && <Badge variant="gray">{subject.exam_board}</Badge>}
           </div>
-          <p className="text-sm text-gray-500 mt-1">
-            {confidentCount}/{topics.length} topics confident ·{' '}
-            Target: {subject.weekly_target_hours}h/week
-          </p>
+          <div className="mt-2 space-y-2">
+            {/* Stacked topic progress bar */}
+            {topics.length > 0 && (
+              <div className="w-full bg-gray-200 rounded-full h-2 flex overflow-hidden max-w-xs">
+                <div className="h-2 bg-green-500" style={{ width: `${pctDone}%` }} />
+                <div className="h-2 bg-amber-400" style={{ width: `${pctInProgress}%` }} />
+              </div>
+            )}
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500" />
+                Done: <strong>{confidentCount}</strong> ({pctDone}%)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400" />
+                In progress: <strong>{inProgressCount}</strong> ({pctInProgress}%)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-gray-300" />
+                Not started: <strong>{notStartedCount}</strong>
+              </span>
+            </div>
+            <p className="text-xs text-gray-400">Target: {subject.weekly_target_hours}h/week</p>
+          </div>
         </div>
         {!isParent && (
           <div className="flex gap-2">

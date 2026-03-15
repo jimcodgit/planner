@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#4f46e5"/>
+
+  <!-- Open book (left page) -->
+  <rect x="110" y="155" width="130" height="175" rx="10" fill="white" opacity="0.95"/>
+  <!-- Open book (right page) -->
+  <rect x="272" y="155" width="130" height="175" rx="10" fill="white" opacity="0.95"/>
+  <!-- Spine -->
+  <rect x="238" y="150" width="36" height="185" rx="6" fill="#818cf8"/>
+
+  <!-- Left page lines -->
+  <rect x="128" y="190" width="94" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="128" y="212" width="94" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="128" y="234" width="76" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="128" y="256" width="86" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="128" y="278" width="60" height="9" rx="4" fill="#c7d2fe"/>
+
+  <!-- Right page lines -->
+  <rect x="290" y="190" width="94" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="290" y="212" width="94" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="290" y="234" width="76" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="290" y="256" width="86" height="9" rx="4" fill="#c7d2fe"/>
+  <rect x="290" y="278" width="60" height="9" rx="4" fill="#c7d2fe"/>
+
+  <!-- GCSE label -->
+  <text x="256" y="404" text-anchor="middle" font-size="68" font-family="system-ui, -apple-system, sans-serif" font-weight="800" fill="white" letter-spacing="4">GCSE</text>
+</svg>

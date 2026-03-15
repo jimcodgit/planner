@@ -1,11 +1,26 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { createClient } from '@/lib/supabase/server';
 import { Nav } from '@/components/layout/Nav';
+import { PwaRegister } from '@/components/PwaRegister';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#4f46e5',
+};
 
 export const metadata: Metadata = {
   title: "George's GCSE Planner",
   description: 'Plan and track GCSE revision',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'GCSE Planner',
+  },
 };
 
 export default async function RootLayout({
@@ -29,6 +44,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground">
+        <PwaRegister />
         {user && profile && (
           <Nav role={profile.role} displayName={profile.display_name} />
         )}

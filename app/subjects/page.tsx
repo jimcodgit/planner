@@ -17,7 +17,6 @@ export default async function SubjectsPage() {
 
   const isParent = profile?.role === 'parent';
 
-  // For parent, show student's subjects
   let query = supabase.from('subjects').select('*').order('name');
   if (!isParent) {
     query = query.eq('user_id', user.id);
@@ -28,27 +27,58 @@ export default async function SubjectsPage() {
   const weekDays = getWeekDays(today);
   const weekStart = toISODate(weekDays[0]);
   const weekEnd = toISODate(weekDays[6]);
+  const todayStr = toISODate(today);
 
   const subjectIds = subjects?.map((s) => s.id) ?? [];
 
-  const [topicsResult, sessionsResult] = await Promise.all([
-    supabase.from('topics').select('*').in('subject_id', subjectIds),
+  const [topicsResult, thisWeekResult, allDoneResult, futurePlannedResult] = await Promise.all([
+    supabase.from('topics').select('*').in('subject_id', subjectIds.length > 0 ? subjectIds : ['x']),
     supabase
       .from('revision_sessions')
-      .select('*')
-      .in('subject_id', subjectIds)
+      .select('subject_id, duration_minutes, status')
+      .in('subject_id', subjectIds.length > 0 ? subjectIds : ['x'])
       .gte('date', weekStart)
       .lte('date', weekEnd),
+    supabase
+      .from('revision_sessions')
+      .select('subject_id, duration_minutes, type')
+      .in('subject_id', subjectIds.length > 0 ? subjectIds : ['x'])
+      .eq('status', 'Done'),
+    supabase
+      .from('revision_sessions')
+      .select('subject_id, duration_minutes, type')
+      .in('subject_id', subjectIds.length > 0 ? subjectIds : ['x'])
+      .eq('status', 'Planned')
+      .gte('date', todayStr),
   ]);
 
   const topicsBySubject: Record<string, typeof topicsResult.data> = {};
-  const sessionsBySubject: Record<string, typeof sessionsResult.data> = {};
-
   for (const t of topicsResult.data ?? []) {
     topicsBySubject[t.subject_id] = [...(topicsBySubject[t.subject_id] ?? []), t];
   }
-  for (const s of sessionsResult.data ?? []) {
-    sessionsBySubject[s.subject_id] = [...(sessionsBySubject[s.subject_id] ?? []), s];
+
+  // This-week done minutes per subject
+  const weekDoneBySubject: Record<string, number> = {};
+  for (const s of thisWeekResult.data ?? []) {
+    if (s.status === 'Done') {
+      weekDoneBySubject[s.subject_id] = (weekDoneBySubject[s.subject_id] ?? 0) + s.duration_minutes;
+    }
+  }
+
+  // All-time completed minutes by subject+type
+  const completedBySubjectType: Record<string, Record<string, number>> = {};
+  for (const s of allDoneResult.data ?? []) {
+    if (!completedBySubjectType[s.subject_id]) completedBySubjectType[s.subject_id] = {};
+    completedBySubjectType[s.subject_id][s.type] =
+      (completedBySubjectType[s.subject_id][s.type] ?? 0) + s.duration_minutes;
+  }
+
+  // Future planned minutes by subject+type
+  const plannedBySubjectType: Record<string, Record<string, number>> = {};
+  for (const s of futurePlannedResult.data ?? []) {
+    if (!plannedBySubjectType[s.subject_id]) plannedBySubjectType[s.subject_id] = {};
+    plannedBySubjectType[s.subject_id][s.type] =
+      (plannedBySubjectType[s.subject_id][s.type] ?? 0) + s.duration_minutes;
   }
 
   return (
@@ -71,7 +101,9 @@ export default async function SubjectsPage() {
             key={subject.id}
             subject={subject}
             topics={topicsBySubject[subject.id] ?? []}
-            sessionsThisWeek={sessionsBySubject[subject.id] ?? []}
+            weekDoneMinutes={weekDoneBySubject[subject.id] ?? 0}
+            completedByType={completedBySubjectType[subject.id] ?? {}}
+            plannedByType={plannedBySubjectType[subject.id] ?? {}}
           />
         ))}
       </div>

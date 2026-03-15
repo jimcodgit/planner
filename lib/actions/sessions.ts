@@ -33,6 +33,8 @@ export async function createSession(data: SessionFormData): Promise<{ error?: st
   if (error) return { error: error.message };
   revalidatePath('/weekly');
   revalidatePath('/daily');
+  revalidatePath('/subjects');
+  revalidatePath('/exams');
   revalidatePath('/');
   return {};
 }
@@ -68,6 +70,8 @@ export async function updateSessionStatus(
 
   revalidatePath('/weekly');
   revalidatePath('/daily');
+  revalidatePath('/subjects');
+  revalidatePath('/exams');
   revalidatePath('/');
 }
 
@@ -80,6 +84,8 @@ export async function rescheduleSession(id: string, newDate: string, newStartTim
   if (error) throw new Error(error.message);
   revalidatePath('/weekly');
   revalidatePath('/daily');
+  revalidatePath('/subjects');
+  revalidatePath('/exams');
 }
 
 export async function updateSession(id: string, data: Partial<SessionFormData>): Promise<{ error?: string }> {
@@ -88,6 +94,8 @@ export async function updateSession(id: string, data: Partial<SessionFormData>):
   if (error) return { error: error.message };
   revalidatePath('/weekly');
   revalidatePath('/daily');
+  revalidatePath('/subjects');
+  revalidatePath('/exams');
   revalidatePath('/');
   return {};
 }
@@ -98,6 +106,8 @@ export async function deleteSession(id: string) {
   if (error) throw new Error(error.message);
   revalidatePath('/weekly');
   revalidatePath('/daily');
+  revalidatePath('/subjects');
+  revalidatePath('/exams');
   revalidatePath('/');
 }
 
@@ -215,6 +225,8 @@ export async function copyPreviousWeek(targetWeekStart: string): Promise<number>
   if (insertError) throw new Error(insertError.message);
 
   revalidatePath('/weekly');
+  revalidatePath('/subjects');
+  revalidatePath('/exams');
   revalidatePath('/');
   return newSessions.length;
 }

@@ -1,6 +1,6 @@
 export type TopicStatus = 'Not Started' | 'Learning' | 'Revising' | 'Confident';
 export type TopicPriority = 'Low' | 'Normal' | 'High';
-export type SessionType = 'Notes' | 'Questions' | 'Past Paper' | 'Flashcards' | 'Other';
+export type SessionType = 'Topic Review' | 'Practice Questions' | 'Practice Paper' | 'Notes' | 'Questions' | 'Past Paper' | 'Flashcards' | 'Other';
 export type SessionStatus = 'Planned' | 'Done' | 'Skipped' | 'Moved';
 export type UserRole = 'student' | 'parent';
 

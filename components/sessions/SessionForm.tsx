@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { createSession, updateSession } from '@/lib/actions/sessions';
 import type { Subject, Topic, RevisionSession, SessionType } from '@/types/database';
 import { toISODate } from '@/lib/utils/dates';
+import { cn } from '@/lib/utils/cn';
 
 interface SessionFormProps {
   subjects: Subject[];
@@ -17,7 +18,11 @@ interface SessionFormProps {
   onSuccess?: () => void;
 }
 
-const SESSION_TYPES: SessionType[] = ['Notes', 'Questions', 'Past Paper', 'Flashcards', 'Other'];
+const SESSION_TYPES: { value: SessionType; label: string; icon: string; color: string }[] = [
+  { value: 'Topic Review',       label: 'Topic Review',       icon: '📖', color: 'border-indigo-300 bg-indigo-50 text-indigo-700' },
+  { value: 'Practice Questions', label: 'Practice Questions', icon: '✍️', color: 'border-amber-300 bg-amber-50 text-amber-700' },
+  { value: 'Practice Paper',     label: 'Practice Paper',     icon: '📝', color: 'border-emerald-300 bg-emerald-50 text-emerald-700' },
+];
 
 export function SessionForm({
   subjects,
@@ -33,7 +38,7 @@ export function SessionForm({
     session?.start_time ? session.start_time.slice(0, 5) : ''
   );
   const [duration, setDuration] = useState(session?.duration_minutes ?? 30);
-  const [type, setType] = useState<SessionType>(session?.type ?? 'Notes');
+  const [type, setType] = useState<SessionType>(session?.type ?? 'Topic Review');
   const [notes, setNotes] = useState(session?.notes ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -131,16 +136,27 @@ export function SessionForm({
         </div>
       </div>
 
-      <Select
-        id="type"
-        label="Session type"
-        value={type}
-        onChange={(e) => setType(e.target.value as SessionType)}
-      >
-        {SESSION_TYPES.map((t) => (
-          <option key={t} value={t}>{t}</option>
-        ))}
-      </Select>
+      <div>
+        <label className="text-sm font-medium text-gray-700 block mb-2">Session type</label>
+        <div className="grid grid-cols-3 gap-2">
+          {SESSION_TYPES.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => setType(t.value)}
+              className={cn(
+                'flex flex-col items-center gap-1 rounded-lg border-2 px-2 py-3 text-xs font-medium transition-colors',
+                type === t.value
+                  ? t.color + ' border-2'
+                  : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'
+              )}
+            >
+              <span className="text-lg">{t.icon}</span>
+              <span className="text-center leading-tight">{t.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <Textarea
         id="session-notes"

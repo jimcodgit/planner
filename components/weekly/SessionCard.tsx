@@ -69,7 +69,18 @@ export function SessionCard({ session, subject, topic, onEdit, isParent }: Sessi
 
         <div className="text-gray-500">
           {formatTime(session.start_time) && `${formatTime(session.start_time)} · `}
-          {minutesToHours(session.duration_minutes)} · {session.type}
+          {minutesToHours(session.duration_minutes)}
+        </div>
+        <div className="mt-1">
+          <span className={cn(
+            'inline-block rounded px-1.5 py-0.5 text-xs font-medium',
+            session.type === 'Topic Review'       && 'bg-indigo-100 text-indigo-700',
+            session.type === 'Practice Questions' && 'bg-amber-100 text-amber-700',
+            session.type === 'Practice Paper'     && 'bg-emerald-100 text-emerald-700',
+            !['Topic Review','Practice Questions','Practice Paper'].includes(session.type) && 'bg-gray-100 text-gray-600',
+          )}>
+            {session.type}
+          </span>
         </div>
 
         {session.skipped_count > 0 && (

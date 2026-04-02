@@ -123,6 +123,15 @@ export function SubjectCard({
               Next: {nextExam.label} — {formatShortDate(nextExam.date)}
             </p>
           )}
+          <div className="mt-2 pt-2 border-t border-gray-100">
+            <Link
+              href={`/subjects/${subject.id}/report`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs text-indigo-600 hover:underline"
+            >
+              View report →
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </Link>

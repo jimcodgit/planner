@@ -80,16 +80,24 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
             <p className="text-xs text-gray-400">Target: {subject.weekly_target_hours}h/week</p>
           </div>
         </div>
-        {!isParent && (
-          <div className="flex gap-2">
-            <Button variant="secondary" size="sm" onClick={() => setShowEditSubject(true)}>
-              Edit
-            </Button>
-            <Button variant="danger" size="sm" onClick={handleDeleteSubject}>
-              Delete
-            </Button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          <Link
+            href={`/subjects/${subject.id}/report`}
+            className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
+          >
+            Report
+          </Link>
+          {!isParent && (
+            <>
+              <Button variant="secondary" size="sm" onClick={() => setShowEditSubject(true)}>
+                Edit
+              </Button>
+              <Button variant="danger" size="sm" onClick={handleDeleteSubject}>
+                Delete
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Exam dates */}

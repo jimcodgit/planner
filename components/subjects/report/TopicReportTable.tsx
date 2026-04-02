@@ -40,7 +40,6 @@ interface TopicReportTableProps {
 export function TopicReportTable({ topics, sessions, examDates }: TopicReportTableProps) {
   const today = new Date().toISOString().split('T')[0];
 
-  // Aggregate per-topic session stats
   const statsByTopic: Record<string, {
     doneCount: number;
     plannedCount: number;
@@ -80,156 +79,71 @@ export function TopicReportTable({ topics, sessions, examDates }: TopicReportTab
   });
 
   return (
-    <>
-      {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 text-left text-xs text-gray-500 uppercase tracking-wide">
-              <th className="pb-2 pr-4 font-medium">Topic</th>
-              <th className="pb-2 pr-4 font-medium">Status</th>
-              <th className="pb-2 pr-4 font-medium">Difficulty</th>
-              <th className="pb-2 pr-4 font-medium">Last Revised</th>
-              <th className="pb-2 pr-4 font-medium text-center">Done</th>
-              <th className="pb-2 pr-4 font-medium text-center">Planned</th>
-              <th className="pb-2 pr-4 font-medium">Session Mix</th>
-              <th className="pb-2 font-medium">Urgency</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {enriched.map((topic) => (
-              <tr key={topic.id} className="group">
-                <td className="py-2.5 pr-4">
-                  <span className="font-medium text-gray-900">{topic.name}</span>
-                  {topic.priority === 'High' && (
-                    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700">
-                      High
-                    </span>
-                  )}
-                </td>
-                <td className="py-2.5 pr-4">
-                  <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', STATUS_CLASSES[topic.status])}>
-                    {topic.status}
-                  </span>
-                  {topic.difficulty >= 4 && topic.status === 'Confident' && (
-                    <span
-                      className="ml-1 text-amber-500 cursor-help"
-                      title="High difficulty — worth double-checking your confidence here."
-                    >
-                      ⚠️
-                    </span>
-                  )}
-                </td>
-                <td className="py-2.5 pr-4">
-                  <span className="flex gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span
-                        key={i}
-                        className={cn('w-2 h-2 rounded-full', i < topic.difficulty ? 'bg-gray-700' : 'bg-gray-200')}
-                      />
-                    ))}
-                  </span>
-                </td>
-                <td className="py-2.5 pr-4 text-xs">
-                  {topic.last_revised_at ? (
-                    <span className="text-gray-600">{formatDisplayDate(topic.last_revised_at)}</span>
-                  ) : (
-                    <span className="text-red-500 font-medium">Never</span>
-                  )}
-                </td>
-                <td className="py-2.5 pr-4 text-center text-gray-700 font-medium">
-                  {topic.doneCount}
-                </td>
-                <td className="py-2.5 pr-4 text-center text-gray-700 font-medium">
-                  {topic.plannedCount}
-                  {topic.totalSkipped > 2 && (
-                    <span
-                      className="ml-1 text-amber-500 cursor-help"
-                      title={`${topic.totalSkipped} sessions skipped — may need attention`}
-                    >
-                      ⚠
-                    </span>
-                  )}
-                </td>
-                <td className="py-2.5 pr-4">
-                  <span className="flex gap-1.5">
-                    {SESSION_MIX_TYPES.map(({ type, icon, label }) => (
-                      <span
-                        key={type}
-                        className={cn(
-                          'text-base cursor-help',
-                          (topic.doneByType[type] ?? 0) > 0 ? 'opacity-100' : 'opacity-20',
-                        )}
-                        title={`${label}: ${topic.doneByType[type] ?? 0} done`}
-                      >
-                        {icon}
-                      </span>
-                    ))}
-                  </span>
-                </td>
-                <td className="py-2.5">
-                  <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', URGENCY_CLASSES[topic.urgency])}>
-                    {topic.urgency}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile cards */}
-      <div className="md:hidden space-y-3">
-        {enriched.map((topic) => (
-          <div key={topic.id} className="border border-gray-200 rounded-lg p-3">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div>
-                <span className="font-medium text-gray-900 text-sm">{topic.name}</span>
-                {topic.priority === 'High' && (
-                  <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700">
-                    High
-                  </span>
-                )}
-              </div>
-              <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0', URGENCY_CLASSES[topic.urgency])}>
-                {topic.urgency}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', STATUS_CLASSES[topic.status])}>
-                {topic.status}
-              </span>
-              {topic.difficulty >= 4 && topic.status === 'Confident' && (
-                <span className="text-amber-500 text-xs" title="High difficulty — worth double-checking">⚠️</span>
+    <div className="space-y-2">
+      {enriched.map((topic) => (
+        <div key={topic.id} className="border border-gray-200 rounded-lg p-3">
+          {/* Row 1: name + urgency */}
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2 flex-wrap min-w-0">
+              <span className="font-medium text-gray-900 text-sm">{topic.name}</span>
+              {topic.priority === 'High' && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700">
+                  High
+                </span>
               )}
             </div>
-            <p className="text-xs text-gray-500 mb-2">
+            <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0', URGENCY_CLASSES[topic.urgency])}>
+              {topic.urgency}
+            </span>
+          </div>
+
+          {/* Row 2: status + difficulty */}
+          <div className="flex items-center gap-3 mb-2">
+            <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', STATUS_CLASSES[topic.status])}>
+              {topic.status}
+              {topic.difficulty >= 4 && topic.status === 'Confident' && (
+                <span className="ml-1" title="High difficulty — worth double-checking your confidence here.">⚠️</span>
+              )}
+            </span>
+            <span className="flex gap-0.5" title={`Difficulty: ${topic.difficulty}/5`}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <span key={i} className={cn('w-2 h-2 rounded-full', i < topic.difficulty ? 'bg-gray-700' : 'bg-gray-200')} />
+              ))}
+            </span>
+          </div>
+
+          {/* Row 3: stats */}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+            <span>
               Last revised:{' '}
               {topic.last_revised_at ? (
-                formatDisplayDate(topic.last_revised_at)
+                <span className="text-gray-700">{formatDisplayDate(topic.last_revised_at)}</span>
               ) : (
                 <span className="text-red-500 font-medium">Never</span>
               )}
-            </p>
-            <details className="text-xs text-gray-500">
-              <summary className="cursor-pointer text-indigo-600 font-medium">Details</summary>
-              <div className="mt-2 space-y-1 pl-1">
-                <p>Difficulty: {Array.from({ length: 5 }).map((_, i) => i < topic.difficulty ? '●' : '○').join('')}</p>
-                <p>Sessions done: {topic.doneCount} · Planned: {topic.plannedCount}</p>
-                {topic.totalSkipped > 2 && <p className="text-amber-600">⚠ {topic.totalSkipped} sessions skipped</p>}
-                <p>
-                  Session mix:{' '}
-                  {SESSION_MIX_TYPES.map(({ type, icon, label }) => (
-                    <span key={type} className={cn('mr-1', (topic.doneByType[type] ?? 0) === 0 ? 'opacity-30' : '')} title={`${label}: ${topic.doneByType[type] ?? 0}`}>
-                      {icon}
-                    </span>
-                  ))}
-                </p>
-              </div>
-            </details>
+            </span>
+            <span>Done: <span className="text-gray-700 font-medium">{topic.doneCount}</span></span>
+            <span>
+              Planned: <span className="text-gray-700 font-medium">{topic.plannedCount}</span>
+              {topic.totalSkipped > 2 && (
+                <span className="ml-1 text-amber-500" title={`${topic.totalSkipped} sessions skipped — may need attention`}>⚠</span>
+              )}
+            </span>
+            <span className="flex items-center gap-1">
+              Mix:{' '}
+              {SESSION_MIX_TYPES.map(({ type, icon, label }) => (
+                <span
+                  key={type}
+                  className={cn((topic.doneByType[type] ?? 0) > 0 ? 'opacity-100' : 'opacity-20')}
+                  title={`${label}: ${topic.doneByType[type] ?? 0} done`}
+                >
+                  {icon}
+                </span>
+              ))}
+            </span>
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      ))}
+    </div>
   );
 }

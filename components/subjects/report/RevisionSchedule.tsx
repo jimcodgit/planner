@@ -63,53 +63,18 @@ export function RevisionSchedule({
         )}
       </p>
 
-      {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 text-left text-xs text-gray-500 uppercase tracking-wide">
-              <th className="pb-2 pr-4 font-medium">Topic</th>
-              <th className="pb-2 pr-4 font-medium">Urgency</th>
-              <th className="pb-2 pr-4 font-medium text-right">Already Planned</th>
-              <th className="pb-2 pr-4 font-medium text-right">Recommended</th>
-              <th className="pb-2 font-medium text-right">Gap</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {analysis.topicGaps.map(({ topic, urgency, alreadyPlannedMinutes, recommendedMinutes, gap }) => (
-              <tr key={topic.id}>
-                <td className="py-2.5 pr-4 font-medium text-gray-900">{topic.name}</td>
-                <td className="py-2.5 pr-4">
-                  <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', URGENCY_CLASSES[urgency])}>
-                    {urgency}
-                  </span>
-                </td>
-                <td className="py-2.5 pr-4 text-right text-gray-700">
-                  {minutesToHours(alreadyPlannedMinutes)}
-                </td>
-                <td className="py-2.5 pr-4 text-right text-gray-700">
-                  {minutesToHours(recommendedMinutes)}
-                </td>
-                <td className="py-2.5 text-right">
-                  <GapBadge gap={gap} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile cards */}
-      <div className="md:hidden space-y-2">
+      <div className="space-y-2">
         {analysis.topicGaps.map(({ topic, urgency, alreadyPlannedMinutes, recommendedMinutes, gap }) => (
           <div key={topic.id} className="border border-gray-200 rounded-lg p-3 flex items-center justify-between gap-3">
-            <div>
-              <p className="font-medium text-gray-900 text-sm">{topic.name}</p>
-              <div className="flex items-center gap-2 mt-1">
+            <div className="min-w-0">
+              <p className="font-medium text-gray-900 text-sm truncate">{topic.name}</p>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className={cn('inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium', URGENCY_CLASSES[urgency])}>
                   {urgency}
                 </span>
-                <span className="text-xs text-gray-500">{minutesToHours(alreadyPlannedMinutes)} of {minutesToHours(recommendedMinutes)}</span>
+                <span className="text-xs text-gray-500">
+                  {minutesToHours(alreadyPlannedMinutes)} planned · {minutesToHours(recommendedMinutes)} recommended
+                </span>
               </div>
             </div>
             <GapBadge gap={gap} />

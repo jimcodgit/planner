@@ -85,7 +85,7 @@ export default async function WallReportPage() {
         @media print {
           .print-hidden { display: none !important; }
           body { margin: 0; padding: 0; background: white; }
-          @page { size: A4 portrait; margin: 12mm; }
+          @page { size: A4 landscape; margin: 10mm; }
         }
       `}</style>
 
@@ -98,8 +98,8 @@ export default async function WallReportPage() {
         <PrintButton />
       </div>
 
-      {/* Report body — A4 width */}
-      <div className="max-w-[740px] mx-auto px-6 py-4 space-y-4 bg-white">
+      {/* Report body — A4 landscape width (~277mm usable) */}
+      <div className="max-w-[1050px] mx-auto px-6 py-4 space-y-4 bg-white">
 
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 pb-2">
@@ -107,15 +107,12 @@ export default async function WallReportPage() {
             <h1 className="text-base font-bold text-gray-900">GCSE Revision · {studentName}</h1>
             <p className="text-gray-400" style={{ fontSize: '9px' }}>Printed {printDate}</p>
           </div>
-          <p className="text-amber-500 font-medium print-hidden" style={{ fontSize: '9px' }}>
-            Reprint every Sunday to keep this up to date.
-          </p>
-          <p className="text-amber-500 font-medium hidden print:block" style={{ fontSize: '9px' }}>
+          <p className="text-amber-500 font-medium" style={{ fontSize: '9px' }}>
             Reprint every Sunday to keep this up to date.
           </p>
         </div>
 
-        {/* Section 1 — Exam Timeline */}
+        {/* Section 1 — Exam Timeline (full width) */}
         {timeline ? (
           <section>
             <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Exam Timeline</h2>
@@ -127,49 +124,54 @@ export default async function WallReportPage() {
           </div>
         )}
 
-        {/* Section 2 — Subject Status Grid */}
-        <section>
-          <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Subject Status</h2>
-          <WallSubjectGrid subjects={subjects} topicsBySubject={topicsBySubject} />
-          <div className="flex items-center gap-4 mt-1.5" style={{ fontSize: '8px', color: '#9ca3af' }}>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-green-500" /> ≥60% confident</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> 30–59% confident</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> &lt;30% confident</span>
-          </div>
-        </section>
+        {/* Sections 2–4 — three columns */}
+        <div className="grid grid-cols-3 gap-4 items-start">
 
-        {/* Section 3 — Topic Urgency Heatmap */}
-        {allTopics.length > 0 && (
+          {/* Column 1 — Subject Status Grid */}
           <section>
-            <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Topic Urgency Heatmap</h2>
-            <WallHeatmap subjects={subjects} topicsBySubject={topicsBySubject} />
+            <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Subject Status</h2>
+            <WallSubjectGrid subjects={subjects} topicsBySubject={topicsBySubject} />
+            <div className="flex flex-wrap items-center gap-3 mt-1.5" style={{ fontSize: '8px', color: '#9ca3af' }}>
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-green-500" /> ≥60%</span>
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> 30–59%</span>
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> &lt;30%</span>
+            </div>
           </section>
-        )}
 
-        {/* Section 4 — This Week's Targets */}
-        <section>
-          <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">
-            This Week's Targets
-            <span className="ml-2 font-normal text-gray-400 normal-case">
-              {format(weekDays[0], 'd MMM')} – {format(weekDays[6], 'd MMM')}
-            </span>
-          </h2>
-          <WallTargetBars
-            subjects={subjects}
-            sessionsBySubject={sessionsBySubject}
-            weekStart={weekStart}
-            weekEnd={weekEnd}
-          />
-          <div className="flex items-center gap-4 mt-1.5" style={{ fontSize: '8px', color: '#9ca3af' }}>
-            <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-green-500" /> Done</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-indigo-300" /> Planned</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-gray-100" /> Remaining</span>
-          </div>
-        </section>
+          {/* Column 2 — Topic Urgency Heatmap */}
+          {allTopics.length > 0 && (
+            <section>
+              <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Topic Urgency Heatmap</h2>
+              <WallHeatmap subjects={subjects} topicsBySubject={topicsBySubject} />
+            </section>
+          )}
 
-        {/* Section 5 — Overall Milestone Strip */}
-        {totalTopics > 0 && (
+          {/* Column 3 — This Week's Targets */}
           <section>
+            <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">
+              This Week's Targets
+              <span className="ml-1 font-normal text-gray-400 normal-case">
+                {format(weekDays[0], 'd MMM')}–{format(weekDays[6], 'd MMM')}
+              </span>
+            </h2>
+            <WallTargetBars
+              subjects={subjects}
+              sessionsBySubject={sessionsBySubject}
+              weekStart={weekStart}
+              weekEnd={weekEnd}
+            />
+            <div className="flex items-center gap-3 mt-1.5" style={{ fontSize: '8px', color: '#9ca3af' }}>
+              <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-green-500" /> Done</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-indigo-300" /> Planned</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-gray-100" /> Remaining</span>
+            </div>
+          </section>
+
+        </div>
+
+        {/* Section 5 — Overall Milestone Strip (full width) */}
+        {totalTopics > 0 && (
+          <section className="border-t border-gray-100 pt-3">
             <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Overall Progress</h2>
             <WallMilestoneStrip
               totalTopics={totalTopics}

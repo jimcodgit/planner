@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ENUMs
-CREATE TYPE topic_status AS ENUM ('Not Started', 'Learning', 'Revising', 'Confident');
+CREATE TYPE topic_status AS ENUM ('Not Started', 'Wobbly', 'Brush Up', 'Confident');
 CREATE TYPE topic_priority AS ENUM ('Low', 'Normal', 'High');
 CREATE TYPE session_type AS ENUM ('Notes', 'Questions', 'Past Paper', 'Flashcards', 'Other');
 CREATE TYPE session_status AS ENUM ('Planned', 'Done', 'Skipped', 'Moved');

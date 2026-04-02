@@ -108,9 +108,9 @@ Status:
 
 Not Started
 
-Learning
+Wobbly
 
-Revising
+Brush Up
 
 Confident
 
@@ -242,7 +242,7 @@ The system calculates a topic priority score (0–100) based on:
 
 Exam urgency (35%) — 1 - daysUntilExam / 120
 
-Topic status (30%) — Not Started=1.0, Learning=0.75, Revising=0.4, Confident=0.1
+Topic status (30%) — Not Started=1.0, Wobbly=0.75, Brush Up=0.4, Confident=0.1
 
 Staleness (20%) — min(daysSinceRevised / 14, 1); never revised = 1.0
 

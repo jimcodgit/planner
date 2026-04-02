@@ -16,7 +16,7 @@ const topic: Topic = {
   id: 't1',
   subject_id: 's1',
   name: 'Algebra',
-  status: 'Revising',
+  status: 'Brush Up',
   difficulty: 4,
   priority: 'High',
   notes: null,
@@ -64,7 +64,7 @@ describe('toCSV', () => {
   it('includes topic data', () => {
     const csv = toCSV(exportData);
     expect(csv).toContain('Algebra');
-    expect(csv).toContain('Revising');
+    expect(csv).toContain('Brush Up');
     expect(csv).toContain('High');
   });
 

@@ -14,12 +14,12 @@ interface TopicRowProps {
   onEdit: (topic: Topic) => void;
 }
 
-const STATUS_OPTIONS: TopicStatus[] = ['Not Started', 'Learning', 'Revising', 'Confident'];
+const STATUS_OPTIONS: TopicStatus[] = ['Not Started', 'Wobbly', 'Brush Up', 'Confident'];
 
 const STATUS_BADGE: Record<TopicStatus, 'gray' | 'blue' | 'yellow' | 'green'> = {
   'Not Started': 'gray',
-  'Learning': 'blue',
-  'Revising': 'yellow',
+  'Wobbly': 'blue',
+  'Brush Up': 'yellow',
   'Confident': 'green',
 };
 

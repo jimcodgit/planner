@@ -92,7 +92,7 @@ describe('sortByPriority', () => {
     const topics = [
       makeTopic({ id: '1', status: 'Confident', difficulty: 1 }),
       makeTopic({ id: '2', status: 'Not Started', difficulty: 5 }),
-      makeTopic({ id: '3', status: 'Learning', difficulty: 3 }),
+      makeTopic({ id: '3', status: 'Wobbly', difficulty: 3 }),
     ];
     const sorted = sortByPriority(topics, nearExam);
     expect(sorted[0].id).toBe('2');

@@ -59,8 +59,8 @@ export function TopicForm({ subjectId, topic, onSuccess }: TopicFormProps) {
           onChange={(e) => setStatus(e.target.value as TopicStatus)}
         >
           <option>Not Started</option>
-          <option>Learning</option>
-          <option>Revising</option>
+          <option>Wobbly</option>
+          <option>Brush Up</option>
           <option>Confident</option>
         </Select>
         <Select

@@ -13,7 +13,7 @@ export function WallSubjectGrid({ subjects, topicsBySubject }: WallSubjectGridPr
       {subjects.map((subject, i) => {
         const topics = topicsBySubject[subject.id] ?? [];
         const confident = topics.filter((t) => t.status === 'Confident').length;
-        const inProgress = topics.filter((t) => t.status === 'Learning' || t.status === 'Revising').length;
+        const inProgress = topics.filter((t) => t.status === 'Wobbly' || t.status === 'Brush Up').length;
         const notStarted = topics.filter((t) => t.status === 'Not Started').length;
         const total = topics.length;
 

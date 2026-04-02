@@ -18,8 +18,8 @@ const URGENCY_CLASSES: Record<UrgencyLevel, string> = {
 
 const STATUS_CLASSES: Record<string, string> = {
   'Confident': 'bg-green-100 text-green-800',
-  'Revising': 'bg-blue-100 text-blue-800',
-  'Learning': 'bg-amber-100 text-amber-800',
+  'Brush Up': 'bg-blue-100 text-blue-800',
+  'Wobbly': 'bg-amber-100 text-amber-800',
   'Not Started': 'bg-gray-100 text-gray-600',
 };
 

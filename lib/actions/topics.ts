@@ -30,7 +30,7 @@ export async function createTopic(data: TopicFormData) {
 export async function updateTopicStatus(id: string, status: TopicStatus, subjectId: string) {
   const supabase = await createClient();
   const updates: Record<string, unknown> = { status };
-  if (status === 'Revising' || status === 'Confident') {
+  if (status === 'Brush Up' || status === 'Confident') {
     updates.last_revised_at = new Date().toISOString();
   }
   const { error } = await supabase.from('topics').update(updates).eq('id', id);

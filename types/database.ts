@@ -1,4 +1,4 @@
-export type TopicStatus = 'Not Started' | 'Learning' | 'Revising' | 'Confident';
+export type TopicStatus = 'Not Started' | 'Wobbly' | 'Brush Up' | 'Confident';
 export type TopicPriority = 'Low' | 'Normal' | 'High';
 export type SessionType = 'Topic Review' | 'Practice Questions' | 'Practice Paper' | 'Notes' | 'Questions' | 'Past Paper' | 'Flashcards' | 'Other';
 export type SessionStatus = 'Planned' | 'Done' | 'Skipped' | 'Moved';

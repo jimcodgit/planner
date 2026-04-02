@@ -61,7 +61,7 @@ export default async function SubjectReportPage({
   const today = new Date();
 
   const confidentCount = topics.filter((t) => t.status === 'Confident').length;
-  const inProgressCount = topics.filter((t) => t.status === 'Learning' || t.status === 'Revising').length;
+  const inProgressCount = topics.filter((t) => t.status === 'Wobbly' || t.status === 'Brush Up').length;
   const notStartedCount = topics.filter((t) => t.status === 'Not Started').length;
   const pctConfident = topics.length > 0 ? Math.round((confidentCount / topics.length) * 100) : 0;
   const pctInProgress = topics.length > 0 ? Math.round((inProgressCount / topics.length) * 100) : 0;

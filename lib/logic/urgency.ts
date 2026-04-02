@@ -6,8 +6,8 @@ export type UrgencyLevel = 'Critical' | 'High' | 'Medium' | 'Low';
 
 const STATUS_WEIGHT: Record<TopicStatus, number> = {
   'Not Started': 4,
-  'Learning': 3,
-  'Revising': 2,
+  'Wobbly': 3,
+  'Brush Up': 2,
   'Confident': 0,
 };
 

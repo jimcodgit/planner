@@ -17,8 +17,8 @@ function examUrgency(examDates: ExamDate[]): number {
 
 const STATUS_WEIGHT: Record<string, number> = {
   'Not Started': 1.0,
-  'Learning': 0.75,
-  'Revising': 0.4,
+  'Wobbly': 0.75,
+  'Brush Up': 0.4,
   'Confident': 0.1,
 };
 

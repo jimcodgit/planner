@@ -125,9 +125,9 @@ export function SessionForm({
         <label className="text-sm font-medium text-gray-700">Duration: {duration} min</label>
         <input
           type="range"
-          min="15"
+          min="5"
           max="180"
-          step="15"
+          step="5"
           value={duration}
           onChange={(e) => setDuration(Number(e.target.value))}
           className="w-full accent-indigo-600"

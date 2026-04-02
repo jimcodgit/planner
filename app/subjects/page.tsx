@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 import { SubjectCard } from '@/components/subjects/SubjectCard';
@@ -83,11 +84,15 @@ export default async function SubjectsPage() {
 
   return (
     <PageWrapper title="Subjects">
-      {!isParent && (
-        <div className="mb-6">
-          <AddSubjectButton />
-        </div>
-      )}
+      <div className="flex items-center justify-between mb-6">
+        {!isParent ? <AddSubjectButton /> : <div />}
+        <Link
+          href="/reports/wall"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Wall Report
+        </Link>
+      </div>
       {(!subjects || subjects.length === 0) && (
         <div className="text-center py-16 text-gray-400">
           <div className="text-5xl mb-3">📖</div>

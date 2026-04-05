@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 import { WeekGrid } from '@/components/weekly/WeekGrid';
+import { PlanMyWeekButton } from '@/components/weekly/PlanMyWeekButton';
 import { getWeekDays, toISODate } from '@/lib/utils/dates';
 import { getDailyWarnings, getWeeklyConsecutiveWarnings } from '@/lib/logic/warnings';
 
@@ -78,6 +79,11 @@ export default async function WeeklyPage() {
 
   return (
     <PageWrapper title="Weekly Planner">
+      {!isParent && (
+        <div className="flex justify-end mb-4">
+          <PlanMyWeekButton />
+        </div>
+      )}
       {consecutiveWarnings.length > 0 && (
         <div className="mb-4 space-y-2">
           {consecutiveWarnings.map((w, i) => (

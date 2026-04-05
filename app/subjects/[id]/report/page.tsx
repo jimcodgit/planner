@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { PrintButton } from '@/components/subjects/report/PrintButton';
+import { ShareProgressButton } from '@/components/subjects/report/ShareProgressButton';
 import { TopicReportTable } from '@/components/subjects/report/TopicReportTable';
 import { WhatToDoNext } from '@/components/subjects/report/WhatToDoNext';
 import { RevisionSchedule } from '@/components/subjects/report/RevisionSchedule';
@@ -101,12 +102,15 @@ export default async function SubjectReportPage({
       `}</style>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Back link + print */}
+        {/* Back link + actions */}
         <div className="flex items-center justify-between print:hidden">
           <Link href={`/subjects/${id}`} className="text-sm text-indigo-600 hover:underline">
             ← Back to {subject.name}
           </Link>
-          <PrintButton />
+          <div className="flex items-center gap-3">
+            {!isParent && <ShareProgressButton />}
+            <PrintButton />
+          </div>
         </div>
 
         {/* Section 1 — Subject Header */}

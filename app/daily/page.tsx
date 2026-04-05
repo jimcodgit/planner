@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 import { TodaysSessions } from '@/components/dashboard/TodaysSessions';
+import { SpacedRepetitionNudges } from '@/components/dashboard/SpacedRepetitionNudges';
 import { getDailyWarnings } from '@/lib/logic/warnings';
 import { toISODate } from '@/lib/utils/dates';
+import type { Subject, Topic } from '@/types/database';
 
 export default async function DailyPage() {
   const supabase = await createClient();
@@ -41,10 +43,10 @@ export default async function DailyPage() {
     supabase.from('topics').select('*').in('id', topicIds.length > 0 ? topicIds : ['x']),
   ]);
 
-  const subjectsById: Record<string, NonNullable<typeof subjectsResult.data>[0]> = {};
-  const topicsById: Record<string, NonNullable<typeof topicsResult.data>[0]> = {};
-  for (const s of subjectsResult.data ?? []) subjectsById[s.id] = s;
-  for (const t of topicsResult.data ?? []) topicsById[t.id] = t;
+  const subjectsById: Record<string, Subject> = {};
+  const topicsById: Record<string, Topic> = {};
+  for (const s of (subjectsResult.data ?? []) as Subject[]) subjectsById[s.id] = s;
+  for (const t of (topicsResult.data ?? []) as Topic[]) topicsById[t.id] = t;
 
   const warnings = getDailyWarnings(sessions ?? []);
 
@@ -52,25 +54,53 @@ export default async function DailyPage() {
     .filter((s) => s.status === 'Done')
     .reduce((sum, s) => sum + s.duration_minutes, 0);
 
+  // Spaced repetition nudges — only for students, fetch all topics
+  let topicsWithSubject: (Topic & { subject: Subject })[] = [];
+  if (!isParent) {
+    let allSubjectsResult = await supabase
+      .from('subjects')
+      .select('*')
+      .eq('user_id', user.id);
+    const allSubjects = (allSubjectsResult.data ?? []) as Subject[];
+    const allSubjectIds = allSubjects.map((s) => s.id);
+
+    if (allSubjectIds.length > 0) {
+      const allSubjectsById: Record<string, Subject> = {};
+      for (const s of allSubjects) allSubjectsById[s.id] = s;
+
+      const allTopicsResult = await supabase
+        .from('topics')
+        .select('*')
+        .in('subject_id', allSubjectIds);
+
+      topicsWithSubject = ((allTopicsResult.data ?? []) as Topic[])
+        .map((t) => ({ ...t, subject: allSubjectsById[t.subject_id] }))
+        .filter((t) => t.subject);
+    }
+  }
+
   return (
     <PageWrapper title={`Today — ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}`}>
       {warnings.map((w, i) => (
         <div key={i} className="mb-4 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-sm text-amber-800">
-          ⚠️ {w.message}
+          {w.message}
         </div>
       ))}
 
       {totalMinutes > 0 && (
         <div className="mb-4 bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-sm text-green-800">
-          ✓ {Math.round(totalMinutes / 60 * 10) / 10}h completed today
+          {Math.round(totalMinutes / 60 * 10) / 10}h completed today
         </div>
       )}
 
-      <TodaysSessions
-        sessions={sessions ?? []}
-        subjectsById={subjectsById}
-        topicsById={topicsById}
-      />
+      <div className="space-y-4">
+        <TodaysSessions
+          sessions={sessions ?? []}
+          subjectsById={subjectsById}
+          topicsById={topicsById}
+        />
+        {!isParent && <SpacedRepetitionNudges topics={topicsWithSubject} />}
+      </div>
     </PageWrapper>
   );
 }

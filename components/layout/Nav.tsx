@@ -24,6 +24,7 @@ export function Nav({ role, displayName }: NavProps) {
     { href: '/daily', label: 'Daily' },
     { href: '/subjects', label: 'Subjects' },
     { href: '/exams', label: 'Exams' },
+    { href: '/past-papers', label: 'Past Papers' },
   ];
 
   const parentLinks = [

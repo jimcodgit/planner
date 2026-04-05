@@ -64,6 +64,37 @@ export interface WeeklyTarget {
   created_at: string;
 }
 
+export interface PastPaperAttempt {
+  id: string;
+  user_id: string;
+  subject_id: string;
+  paper_label: string;
+  attempted_date: string; // YYYY-MM-DD
+  score_raw: number | null;
+  score_max: number | null;
+  grade: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface ExamReflection {
+  id: string;
+  user_id: string;
+  subject_id: string;
+  exam_label: string;
+  exam_date: string; // YYYY-MM-DD
+  prepared_rating: number | null; // 1-5
+  notes: string | null;
+  created_at: string;
+}
+
+export interface ShareToken {
+  id: string;
+  user_id: string;
+  token: string;
+  created_at: string;
+}
+
 // Join types
 export interface SessionWithSubject extends RevisionSession {
   subjects: Pick<Subject, 'name' | 'color'>;

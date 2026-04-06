@@ -15,9 +15,9 @@ interface TopicRowProps {
 
 const STATUS_OPTIONS: TopicStatus[] = ['Not Started', 'Wobbly', 'Brush Up', 'Confident'];
 
-const STATUS_BADGE: Record<TopicStatus, 'gray' | 'blue' | 'yellow' | 'green'> = {
+const STATUS_BADGE: Record<TopicStatus, 'gray' | 'orange' | 'yellow' | 'green'> = {
   'Not Started': 'gray',
-  'Wobbly': 'blue',
+  'Wobbly': 'orange',
   'Brush Up': 'yellow',
   'Confident': 'green',
 };

@@ -9,6 +9,7 @@ import { createSession, updateSession } from '@/lib/actions/sessions';
 import type { Subject, Topic, RevisionSession, SessionType } from '@/types/database';
 import { toISODate } from '@/lib/utils/dates';
 import { cn } from '@/lib/utils/cn';
+import { SessionTypeIcon } from '@/components/ui/SessionTypeIcon';
 
 interface SessionFormProps {
   subjects: Subject[];
@@ -18,10 +19,10 @@ interface SessionFormProps {
   onSuccess?: () => void;
 }
 
-const SESSION_TYPES: { value: SessionType; label: string; icon: string; color: string }[] = [
-  { value: 'Topic Review',       label: 'Topic Review',       icon: '📖', color: 'border-indigo-300 bg-indigo-50 text-indigo-700' },
-  { value: 'Practice Questions', label: 'Practice Questions', icon: '✍️', color: 'border-amber-300 bg-amber-50 text-amber-700' },
-  { value: 'Practice Paper',     label: 'Practice Paper',     icon: '📝', color: 'border-emerald-300 bg-emerald-50 text-emerald-700' },
+const SESSION_TYPES: { value: SessionType; label: string; color: string }[] = [
+  { value: 'Topic Review',       label: 'Topic Review',       color: 'border-indigo-300 bg-indigo-50 text-indigo-700' },
+  { value: 'Practice Questions', label: 'Practice Questions', color: 'border-amber-300 bg-amber-50 text-amber-700' },
+  { value: 'Practice Paper',     label: 'Practice Paper',     color: 'border-emerald-300 bg-emerald-50 text-emerald-700' },
 ];
 
 export function SessionForm({
@@ -147,13 +148,13 @@ export function SessionForm({
               type="button"
               onClick={() => setType(t.value)}
               className={cn(
-                'flex flex-col items-center gap-1 rounded-lg border-2 px-2 py-3 text-xs font-medium transition-colors',
+                'flex flex-col items-center gap-2 rounded-lg border-2 px-2 py-3 text-xs font-medium transition-colors',
                 type === t.value
-                  ? t.color + ' border-2'
+                  ? t.color
                   : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'
               )}
             >
-              <span className="text-lg">{t.icon}</span>
+              <SessionTypeIcon type={t.value} size={20} />
               <span className="text-center leading-tight">{t.label}</span>
             </button>
           ))}

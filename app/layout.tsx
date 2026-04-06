@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { createClient } from '@/lib/supabase/server';
+
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
 import { Nav } from '@/components/layout/Nav';
 import { PwaRegister } from '@/components/PwaRegister';
 
@@ -43,7 +46,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="min-h-screen bg-background text-foreground">
+      <body className={`${inter.className} min-h-screen bg-background text-foreground`}>
         <PwaRegister />
         {user && profile && (
           <Nav role={profile.role} displayName={profile.display_name} />

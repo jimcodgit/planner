@@ -3,14 +3,15 @@
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { SessionTypeIcon } from '@/components/ui/SessionTypeIcon';
 import type { Subject, Topic } from '@/types/database';
 import { minutesToHours } from '@/lib/utils/time';
 import { daysUntil, formatShortDate } from '@/lib/utils/dates';
 
 const SESSION_TYPES = [
-  { value: 'Topic Review',       icon: '📖', short: 'Topic Review' },
-  { value: 'Practice Questions', icon: '✍️', short: 'Practice Q' },
-  { value: 'Practice Paper',     icon: '📝', short: 'Practice Paper' },
+  { value: 'Topic Review',       short: 'Review' },
+  { value: 'Practice Questions', short: 'Questions' },
+  { value: 'Practice Paper',     short: 'Paper' },
 ] as const;
 
 interface SubjectCardProps {
@@ -46,21 +47,28 @@ export function SubjectCard({
     ? 'yellow'
     : 'green';
 
+  const confidenceColor =
+    pctConfident >= 60 ? 'text-green-600' : pctConfident >= 30 ? 'text-amber-500' : 'text-red-500';
+
   return (
     <Link href={`/subjects/${subject.id}`}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-        <CardContent className="py-3">
+      <Card className="hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 cursor-pointer h-full">
+        <CardContent className="py-4">
           {/* Header */}
-          <div className="flex items-start justify-between gap-2 mb-3">
+          <div className="flex items-start justify-between gap-2 mb-4">
             <div className="flex items-center gap-2 min-w-0">
               <div
-                className="w-3 h-3 rounded-full flex-shrink-0"
+                className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5"
                 style={{ backgroundColor: subject.color }}
               />
-              <span className="font-semibold text-gray-900 truncate">{subject.name}</span>
-              {subject.exam_board && (
-                <Badge variant="gray">{subject.exam_board}</Badge>
-              )}
+              <div className="min-w-0">
+                <span className="font-semibold text-gray-900 text-sm leading-tight block truncate">
+                  {subject.name}
+                </span>
+                {subject.exam_board && (
+                  <span className="text-xs text-gray-400">{subject.exam_board}</span>
+                )}
+              </div>
             </div>
             {nextExam && (
               <Badge variant={examBadgeVariant}>
@@ -69,69 +77,49 @@ export function SubjectCard({
             )}
           </div>
 
-          {/* Top stats */}
-          <div className="grid grid-cols-3 gap-3 text-center mb-3">
+          {/* Hero stat — confidence */}
+          <div className="flex items-end justify-between mb-1">
             <div>
-              <div className="text-lg font-bold text-green-600">{pctConfident}%</div>
-              <div className="text-xs text-gray-500">Done</div>
+              <span className={`text-3xl font-bold leading-none ${confidenceColor}`}>
+                {pctConfident}%
+              </span>
+              <span className="text-xs text-gray-400 ml-1.5">confident</span>
             </div>
-            <div>
-              <div className="text-lg font-bold text-amber-500">{pctInProgress}%</div>
-              <div className="text-xs text-gray-500">In Progress</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-gray-900">{minutesToHours(weekDoneMinutes)}</div>
-              <div className="text-xs text-gray-500">This week</div>
-            </div>
+            <span className="text-sm font-semibold text-gray-700">{minutesToHours(weekDoneMinutes)}</span>
+          </div>
+          <div className="text-xs text-gray-400 mb-2">
+            {confidentCount}/{topics.length} topics · this week
           </div>
 
-          {/* Stacked topic progress bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 flex overflow-hidden mb-1">
-            <div className="h-2 bg-green-500 transition-all duration-300" style={{ width: `${pctConfident}%` }} />
-            <div className="h-2 bg-amber-400 transition-all duration-300" style={{ width: `${pctInProgress}%` }} />
-          </div>
-          <div className="flex justify-between text-xs text-gray-400 mb-1">
-            <span>{confidentCount + inProgressCount}/{topics.length} started</span>
-            <span>{confidentCount} done</span>
+          {/* Stacked progress bar */}
+          <div className="w-full bg-gray-100 rounded-full h-2.5 flex overflow-hidden mb-3">
+            <div className="h-full bg-green-500 transition-all duration-300" style={{ width: `${pctConfident}%` }} />
+            <div className="h-full bg-amber-400 transition-all duration-300" style={{ width: `${pctInProgress}%` }} />
           </div>
 
-          {/* Session type breakdown */}
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <div className="grid grid-cols-3 text-xs font-medium mb-1.5">
-              <span className="text-gray-400"></span>
-              <span className="text-center text-green-600">Done</span>
-              <span className="text-center text-indigo-600">Planned</span>
-            </div>
-            {SESSION_TYPES.map(({ value, icon, short }) => (
-              <div key={value} className="grid grid-cols-3 items-center text-xs py-0.5">
-                <span className="text-gray-500 flex items-center gap-1">
-                  <span>{icon}</span>
-                  <span>{short}</span>
-                </span>
-                <span className="text-center font-medium text-gray-700">
-                  {minutesToHours(completedByType[value] ?? 0)}
-                </span>
-                <span className="text-center font-medium text-gray-500">
-                  {minutesToHours(plannedByType[value] ?? 0)}
-                </span>
-              </div>
-            ))}
+          {/* Session type row */}
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+            {SESSION_TYPES.map(({ value, short }) => {
+              const done = completedByType[value] ?? 0;
+              const planned = plannedByType[value] ?? 0;
+              if (done === 0 && planned === 0) return null;
+              return (
+                <div key={value} className="flex items-center gap-1 text-xs text-gray-500">
+                  <SessionTypeIcon type={value} size={13} className="text-gray-400" />
+                  <span className="font-medium text-gray-700">{minutesToHours(done)}</span>
+                  {planned > 0 && (
+                    <span className="text-gray-400">/ {minutesToHours(planned)}</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {nextExam && (
-            <p className="text-xs text-gray-400 mt-2 pt-2 border-t border-gray-100">
-              Next: {nextExam.label} — {formatShortDate(nextExam.date)}
+            <p className="text-xs text-gray-400 mt-3 pt-2 border-t border-gray-100">
+              {nextExam.label} · {formatShortDate(nextExam.date)}
             </p>
           )}
-          <div className="mt-2 pt-2 border-t border-gray-100">
-            <Link
-              href={`/subjects/${subject.id}/report`}
-              onClick={(e) => e.stopPropagation()}
-              className="text-xs text-indigo-600 hover:underline"
-            >
-              View report →
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </Link>

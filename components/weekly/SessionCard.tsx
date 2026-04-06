@@ -10,6 +10,7 @@ import { deleteSession } from '@/lib/actions/sessions';
 import type { RevisionSession, Subject, Topic } from '@/types/database';
 import { minutesToHours, formatTime } from '@/lib/utils/time';
 import { cn } from '@/lib/utils/cn';
+import { SessionTypeIcon, SESSION_TYPE_COLOR } from '@/components/ui/SessionTypeIcon';
 
 interface SessionCardProps {
   session: RevisionSession;
@@ -73,12 +74,10 @@ export function SessionCard({ session, subject, topic, onEdit, isParent }: Sessi
         </div>
         <div className="mt-1">
           <span className={cn(
-            'inline-block rounded px-1.5 py-0.5 text-xs font-medium',
-            session.type === 'Topic Review'       && 'bg-indigo-100 text-indigo-700',
-            session.type === 'Practice Questions' && 'bg-amber-100 text-amber-700',
-            session.type === 'Practice Paper'     && 'bg-emerald-100 text-emerald-700',
-            !['Topic Review','Practice Questions','Practice Paper'].includes(session.type) && 'bg-gray-100 text-gray-600',
+            'inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium',
+            SESSION_TYPE_COLOR[session.type] ?? 'bg-gray-100 text-gray-600',
           )}>
+            <SessionTypeIcon type={session.type} size={12} />
             {session.type}
           </span>
         </div>

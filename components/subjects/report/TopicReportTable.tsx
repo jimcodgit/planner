@@ -2,24 +2,25 @@ import { cn } from '@/lib/utils/cn';
 import { formatDisplayDate } from '@/lib/utils/dates';
 import type { Topic, RevisionSession, ExamDate, SessionType } from '@/types/database';
 import { computeUrgency, type UrgencyLevel } from '@/lib/logic/urgency';
+import { SessionTypeIcon } from '@/components/ui/SessionTypeIcon';
 
-const SESSION_MIX_TYPES: { type: SessionType; icon: string; label: string }[] = [
-  { type: 'Topic Review', icon: '📖', label: 'Topic Review' },
-  { type: 'Practice Questions', icon: '✍️', label: 'Practice Q' },
-  { type: 'Practice Paper', icon: '📝', label: 'Practice Paper' },
+const SESSION_MIX_TYPES: { type: SessionType; label: string }[] = [
+  { type: 'Topic Review',       label: 'Review' },
+  { type: 'Practice Questions', label: 'Questions' },
+  { type: 'Practice Paper',     label: 'Paper' },
 ];
 
 const URGENCY_CLASSES: Record<UrgencyLevel, string> = {
   Critical: 'bg-red-100 text-red-800',
-  High: 'bg-orange-100 text-orange-800',
-  Medium: 'bg-yellow-100 text-yellow-800',
-  Low: 'bg-gray-100 text-gray-600',
+  High:     'bg-orange-100 text-orange-800',
+  Medium:   'bg-yellow-100 text-yellow-800',
+  Low:      'bg-gray-100 text-gray-600',
 };
 
 const STATUS_CLASSES: Record<string, string> = {
-  'Confident': 'bg-green-100 text-green-800',
-  'Brush Up': 'bg-blue-100 text-blue-800',
-  'Wobbly': 'bg-amber-100 text-amber-800',
+  'Confident':   'bg-green-100 text-green-800',
+  'Brush Up':    'bg-yellow-100 text-yellow-800',
+  'Wobbly':      'bg-orange-100 text-orange-800',
   'Not Started': 'bg-gray-100 text-gray-600',
 };
 
@@ -131,13 +132,13 @@ export function TopicReportTable({ topics, sessions, examDates }: TopicReportTab
             </span>
             <span className="flex items-center gap-1">
               Mix:{' '}
-              {SESSION_MIX_TYPES.map(({ type, icon, label }) => (
+              {SESSION_MIX_TYPES.map(({ type, label }) => (
                 <span
                   key={type}
-                  className={cn((topic.doneByType[type] ?? 0) > 0 ? 'opacity-100' : 'opacity-20')}
+                  className={cn((topic.doneByType[type] ?? 0) > 0 ? 'opacity-100 text-gray-600' : 'opacity-20 text-gray-400')}
                   title={`${label}: ${topic.doneByType[type] ?? 0} done`}
                 >
-                  {icon}
+                  <SessionTypeIcon type={type} size={14} />
                 </span>
               ))}
             </span>

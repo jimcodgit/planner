@@ -6,10 +6,12 @@ import { Select } from '@/components/ui/Select';
 import { deleteTopic, updateTopicStatus } from '@/lib/actions/topics';
 import type { Topic, TopicStatus } from '@/types/database';
 import { formatDisplayDate } from '@/lib/utils/dates';
+import { QuizModal } from '@/components/ai/QuizModal';
 
 interface TopicRowProps {
   topic: Topic & { priorityScore: number };
   subjectId: string;
+  subjectName: string;
   onEdit: (topic: Topic) => void;
 }
 
@@ -22,9 +24,10 @@ const STATUS_BADGE: Record<TopicStatus, 'gray' | 'orange' | 'yellow' | 'green'> 
   'Confident': 'green',
 };
 
-export function TopicRow({ topic, subjectId, onEdit }: TopicRowProps) {
+export function TopicRow({ topic, subjectId, subjectName, onEdit }: TopicRowProps) {
   const [updating, setUpdating] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
 
   async function handleStatusChange(newStatus: TopicStatus) {
     setUpdating(true);
@@ -64,6 +67,13 @@ export function TopicRow({ topic, subjectId, onEdit }: TopicRowProps) {
                 {showNotes ? '▲ notes' : '▼ notes'}
               </button>
             )}
+            <button
+              onClick={() => setShowQuiz(true)}
+              className="text-xs text-indigo-500 hover:text-indigo-700 font-medium flex items-center gap-0.5"
+              title="Take a quick quiz on this topic"
+            >
+              ✦ Quiz
+            </button>
           </div>
           <div className="flex items-center gap-3 mt-1">
             <span className="flex gap-0.5">{difficultyDots}</span>
@@ -116,6 +126,16 @@ export function TopicRow({ topic, subjectId, onEdit }: TopicRowProps) {
             {topic.notes}
           </p>
         </div>
+      )}
+
+      {showQuiz && (
+        <QuizModal
+          topicName={topic.name}
+          subjectName={subjectName}
+          difficulty={topic.difficulty}
+          topicNotes={topic.notes}
+          onClose={() => setShowQuiz(false)}
+        />
       )}
     </div>
   );

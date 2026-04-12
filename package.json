@@ -10,14 +10,18 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.35",
+    "@ai-sdk/react": "^3.0.160",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.4",
+    "ai": "^6.0.158",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

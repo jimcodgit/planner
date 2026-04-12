@@ -15,6 +15,7 @@ import type { Subject, Topic } from '@/types/database';
 import { daysUntil, formatDisplayDate } from '@/lib/utils/dates';
 import { useRouter } from 'next/navigation';
 import { minutesToHours } from '@/lib/utils/time';
+import { AIAdvicePanel } from '@/components/ai/AIAdvicePanel';
 
 interface SubjectDetailClientProps {
   subject: Subject;
@@ -141,6 +142,15 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
         </CardContent>
       </Card>
 
+      {/* AI advice */}
+      {!isParent && topics.length > 0 && (
+        <AIAdvicePanel
+          subject={subject}
+          topics={topics}
+          weeklyTargetHours={subject.weekly_target_hours}
+        />
+      )}
+
       {/* Never revised warning */}
       {neverRevised.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
@@ -176,6 +186,7 @@ export function SubjectDetailClient({ subject, topics, isParent }: SubjectDetail
                   key={topic.id}
                   topic={topic}
                   subjectId={subject.id}
+                  subjectName={subject.name}
                   onEdit={isParent ? () => {} : setEditingTopic}
                 />
               ))}

@@ -1,5 +1,5 @@
 import { createGroq } from '@ai-sdk/groq';
-import { generateObject } from 'ai';
+import { generateText } from 'ai';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 
@@ -8,10 +8,10 @@ const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 const QuizSchema = z.object({
   questions: z.array(
     z.object({
-      question: z.string().describe('The question text'),
-      options: z.array(z.string()).length(4).describe('Exactly 4 answer options'),
-      correct: z.number().min(0).max(3).describe('Index of the correct option (0–3)'),
-      explanation: z.string().describe('Brief explanation of the correct answer'),
+      question: z.string(),
+      options: z.array(z.string()).length(4),
+      correct: z.number().min(0).max(3),
+      explanation: z.string(),
     })
   ).min(3).max(5),
 });
@@ -31,21 +31,37 @@ export async function POST(req: Request) {
   const prompt = `Generate ${questionCount} ${levelHint} GCSE-level multiple choice questions about "${topicName}" for ${subjectName}.
 ${topicNotes ? `Context/notes for this topic: ${topicNotes}` : ''}
 
-Requirements:
-- Each question must have exactly 4 distinct answer options
-- Only one option is correct
-- Wrong options should be plausible (not obviously wrong)
-- Explanation should be 1–2 sentences
-- Questions should test understanding, not just recall`;
+Return ONLY a JSON object with this exact structure — no markdown, no extra text:
+{
+  "questions": [
+    {
+      "question": "...",
+      "options": ["option A", "option B", "option C", "option D"],
+      "correct": 0,
+      "explanation": "..."
+    }
+  ]
+}
+
+Rules:
+- options must be an array of exactly 4 strings
+- correct is the index (0–3) of the correct option
+- wrong options should be plausible, not obviously wrong
+- explanation is 1–2 sentences
+- questions test understanding, not just recall`;
 
   try {
-    const { object } = await generateObject({
-      model: groq('llama-3.1-8b-instant'),
-      schema: QuizSchema,
+    const { text } = await generateText({
+      model: groq('llama-3.3-70b-versatile'),
       prompt,
+      maxOutputTokens: 1200,
     });
 
-    return Response.json(object);
+    // Strip any accidental markdown fences
+    const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/, '').trim();
+    const parsed = JSON.parse(cleaned);
+    const validated = QuizSchema.parse(parsed);
+    return Response.json(validated);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to generate quiz';
     return Response.json({ error: message }, { status: 500 });

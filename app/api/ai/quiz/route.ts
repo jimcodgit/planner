@@ -19,10 +19,6 @@ const QuizSchema = z.object({
 export type QuizQuestion = z.infer<typeof QuizSchema>['questions'][number];
 
 export async function POST(req: Request) {
-  if (!process.env.GROQ_API_KEY) {
-    return Response.json({ error: 'GROQ_API_KEY not configured' }, { status: 503 });
-  }
-
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response('Unauthorized', { status: 401 });

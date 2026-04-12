@@ -38,6 +38,9 @@ export interface Topic {
   priority: TopicPriority;
   notes: string | null;
   last_revised_at: string | null;
+  last_quiz_score: number | null;
+  last_quiz_total: number | null;
+  last_quiz_at: string | null;
   created_at: string;
 }
 

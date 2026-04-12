@@ -13,7 +13,7 @@ const QuizSchema = z.object({
       correct: z.number().min(0).max(3),
       explanation: z.string(),
     })
-  ).min(3).max(5),
+  ).min(8).max(12),
 });
 
 export type QuizQuestion = z.infer<typeof QuizSchema>['questions'][number];
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   const { topicName, subjectName, difficulty, topicNotes } = await req.json();
 
-  const questionCount = difficulty >= 4 ? 5 : 3;
+  const questionCount = 12;
   const levelHint = difficulty >= 4 ? 'challenging, higher-order' : difficulty <= 2 ? 'straightforward, recall-based' : 'moderate';
 
   const prompt = `Generate ${questionCount} ${levelHint} GCSE-level multiple choice questions about "${topicName}" for ${subjectName}.
@@ -54,7 +54,7 @@ Rules:
     const { text } = await generateText({
       model: groq('llama-3.3-70b-versatile'),
       prompt,
-      maxOutputTokens: 1200,
+      maxOutputTokens: 2500,
     });
 
     // Strip any accidental markdown fences

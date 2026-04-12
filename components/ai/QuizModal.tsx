@@ -57,9 +57,11 @@ export function QuizModal({
 
   function handleNext() {
     if (current + 1 >= questions.length) {
+      // scores state hasn't updated yet for the current answer — compute from current selection
+      const finalScores = [...scores, selected === q?.correct];
+      const correct = finalScores.filter(Boolean).length;
+      onComplete?.(correct, finalScores.length);
       setPhase('result');
-      const finalScores = [...scores];
-      onComplete?.(finalScores.filter(Boolean).length, finalScores.length);
     } else {
       setCurrent((c) => c + 1);
       setSelected(null);
@@ -168,7 +170,7 @@ export function QuizModal({
 
       {phase === 'result' && (
         <ResultScreen
-          correct={correctCount}
+          correct={scores.filter(Boolean).length}
           total={questions.length}
           topicName={topicName}
           onClose={onClose}

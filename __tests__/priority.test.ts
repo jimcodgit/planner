@@ -16,6 +16,9 @@ function makeTopic(overrides: Partial<Topic> = {}): Topic {
     priority: 'Normal',
     notes: null,
     last_revised_at: null,
+    last_quiz_score: null,
+    last_quiz_total: null,
+    last_quiz_at: null,
     created_at: new Date().toISOString(),
     ...overrides,
   };

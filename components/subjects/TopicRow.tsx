@@ -7,6 +7,7 @@ import { deleteTopic, updateTopicStatus } from '@/lib/actions/topics';
 import type { Topic, TopicStatus } from '@/types/database';
 import { formatDisplayDate } from '@/lib/utils/dates';
 import { QuizModal } from '@/components/ai/QuizModal';
+import { saveQuizScore } from '@/lib/actions/quiz';
 
 interface TopicRowProps {
   topic: Topic & { priorityScore: number };
@@ -88,6 +89,17 @@ export function TopicRow({ topic, subjectId, subjectName, onEdit }: TopicRowProp
             {!topic.last_revised_at && (
               <span className="text-xs text-amber-500">Never revised</span>
             )}
+            {topic.last_quiz_score !== null && topic.last_quiz_total !== null && (
+              <span className="text-xs text-gray-400">
+                Last quiz: <span className={
+                  topic.last_quiz_score / topic.last_quiz_total >= 0.8 ? 'text-green-600 font-medium' :
+                  topic.last_quiz_score / topic.last_quiz_total >= 0.6 ? 'text-amber-600 font-medium' :
+                  'text-red-500 font-medium'
+                }>
+                  {topic.last_quiz_score}/{topic.last_quiz_total}
+                </span>
+              </span>
+            )}
           </div>
         </div>
 
@@ -135,6 +147,7 @@ export function TopicRow({ topic, subjectId, subjectName, onEdit }: TopicRowProp
           difficulty={topic.difficulty}
           topicNotes={topic.notes}
           onClose={() => setShowQuiz(false)}
+          onComplete={(score, total) => saveQuizScore(topic.id, subjectId, score, total)}
         />
       )}
     </div>

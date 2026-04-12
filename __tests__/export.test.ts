@@ -21,6 +21,9 @@ const topic: Topic = {
   priority: 'High',
   notes: null,
   last_revised_at: '2026-03-01T10:00:00Z',
+  last_quiz_score: null,
+  last_quiz_total: null,
+  last_quiz_at: null,
   created_at: '2026-01-01T00:00:00Z',
 };
 

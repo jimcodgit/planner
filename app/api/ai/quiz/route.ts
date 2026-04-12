@@ -42,6 +42,7 @@ Requirements:
     const { object } = await generateObject({
       model: groq('llama-3.3-70b-versatile'),
       schema: QuizSchema,
+      mode: 'json',
       prompt,
     });
 
